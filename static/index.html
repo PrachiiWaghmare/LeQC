@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeQC — Learn Quantum Computing</title>
+  <meta name="description" content="Master quantum computing through active experimentation: interactive circuit builder, real Qiskit Aer simulation, 3D Bloch sphere, contextual AI tutor, and challenges.">
+  
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  
+  <!-- Vendor Libraries (Downloaded Locally for 100% Offline Resilience) -->
+  <script src="/static/vendor/three.min.js"></script>
+  <script src="/static/vendor/OrbitControls.js"></script>
+  <script src="/static/vendor/chart.umd.min.js"></script>
+  <script src="/static/js/demo-data.js"></script>
+</head>
+<body>
+
+  <!-- Ambient Cyber Background -->
+  <div class="ambient-background"></div>
+
+  <div id="app-root">
+
+    <!-- =================================================================
+         1. FULLSCREEN LANDING PAGE (LeQC — Learn Quantum Computing)
+         ================================================================= -->
+    <div id="landing-page-overlay" class="landing-page-overlay">
+      <div class="landing-nav-header">
+        <div class="landing-brand-logo">
+          <div class="brand-atom landing-atom">
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-core pink-core"></div>
+          </div>
+          <div class="landing-brand-text-wrap">
+            <span class="landing-brand-title">Le<span class="pink-accent-text">QC</span></span>
+            <span class="landing-brand-subtitle">Learn Quantum Computing</span>
+          </div>
+        </div>
+
+        <div class="landing-nav-actions">
+          <button class="btn-landing-nav-auth" id="landing-nav-auth-btn">
+            Login / Sign Up
+          </button>
+        </div>
+      </div>
+
+      <!-- Landing Hero Section -->
+      <section class="landing-hero-container">
+        <div class="landing-hero-grid">
+          
+          <!-- Left Column: Copy & CTAs -->
+          <div class="landing-hero-copy">
+            <div class="landing-tag-badge">
+              <span class="landing-tag-dot"></span>
+              <span>INTERACTIVE QUANTUM EDUCATION</span>
+            </div>
+
+            <h1 class="landing-hero-headline">
+              LEARN<br>
+              <span class="gradient-pink-text">QUANTUM</span><br>
+              COMPUTING
+            </h1>
+
+            <p class="landing-hero-tagline">
+              Explore. Build. Simulate. Master Quantum Computing.
+            </p>
+
+            <p class="landing-hero-description">
+              Step inside a living quantum world. Master superposition, entanglement, and quantum algorithms through an intuitive visual circuit studio, local Qiskit Aer simulation, and AI guidance.
+            </p>
+
+            <div class="landing-features-list">
+              <div class="landing-feature-chip">
+                <span class="feature-chip-icon">🗺️</span>
+                <span>Top &rarr; Bottom Journey</span>
+              </div>
+              <div class="landing-feature-chip">
+                <span class="feature-chip-icon">⚛️</span>
+                <span>Visual Circuit Studio</span>
+              </div>
+              <div class="landing-feature-chip">
+                <span class="feature-chip-icon">🌐</span>
+                <span>3D Bloch Sphere</span>
+              </div>
+              <div class="landing-feature-chip">
+                <span class="feature-chip-icon">🧠</span>
+                <span>Contextual AI Tutor</span>
+              </div>
+            </div>
+
+            <div class="landing-cta-row">
+              <button class="btn-hero-cta" id="landing-start-btn">
+                <span>START LEARNING</span> &rarr;
+              </button>
+              <button class="btn-hero-secondary" id="landing-direct-login-btn">
+                Sign In &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: 3D Animated Quantum System Visual -->
+          <div class="landing-hero-visual-col">
+            <div class="landing-3d-visual-card" id="landing-visual-card">
+              <!-- Three.js Canvas Container -->
+              <div class="landing-canvas-holder" id="landing-canvas-holder">
+                <canvas id="landing-hero-canvas"></canvas>
+              </div>
+
+              <!-- Floating Quantum HUD Data Chips -->
+              <div class="visual-floating-chip chip-1">
+                <span class="chip-dot-pink"></span>
+                <span class="chip-math">|ψ⟩ = α|0⟩ + β|1⟩</span>
+              </div>
+              <div class="visual-floating-chip chip-2">
+                <span class="chip-dot-cyan"></span>
+                <span class="chip-math">|Φ⁺⟩ = (|00⟩+|11⟩)/√2</span>
+              </div>
+              <div class="visual-floating-chip chip-3">
+                <span class="chip-dot-pink"></span>
+                <span class="chip-math">H|0⟩ &rarr; Superposition</span>
+              </div>
+
+              <div class="landing-visual-badge">
+                <span class="pulse-pink-dot"></span>
+                <span>3D Quantum State Simulation</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- =================================================================
+         2. AUTHENTICATION SCREEN (Login / Sign Up)
+         ================================================================= -->
+    <div id="auth-page-overlay" class="auth-page-overlay" style="display:none;">
+      <!-- Subtle Background Quantum Atmosphere -->
+      <div class="auth-ambient-grid"></div>
+
+      <div class="auth-card-container">
+        <!-- Brand Header -->
+        <div class="auth-card-header">
+          <div class="brand-atom landing-atom auth-atom">
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-core pink-core"></div>
+          </div>
+          <h2 class="auth-brand-name">Le<span class="pink-accent-text">QC</span></h2>
+          <p class="auth-brand-sub">Learn Quantum Computing</p>
+        </div>
+
+        <!-- Auth Tabs: Login vs Sign Up -->
+        <div class="auth-toggle-pill">
+          <button class="auth-pill-btn active" id="auth-tab-login-btn">Login</button>
+          <button class="auth-pill-btn" id="auth-tab-signup-btn">Sign Up</button>
+        </div>
+
+        <div class="auth-form-wrapper">
+          <!-- Notification Alert Box -->
+          <div class="auth-msg-alert" id="auth-page-alert" style="display:none;"></div>
+
+          <!-- LOGIN FORM -->
+          <form id="auth-screen-login-form" class="auth-form-body active">
+            <div class="auth-greeting">
+              <h3>Welcome back 👋</h3>
+              <p>Sign in to resume your quantum learning journey.</p>
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label" for="auth-login-email">Email or Username</label>
+              <input type="text" class="auth-input" id="auth-login-email" placeholder="learner@quantum.edu or aarav" value="aarav@quantumclass.edu" required autocomplete="username">
+            </div>
+
+            <div class="auth-input-group">
+              <div class="auth-label-row">
+                <label class="auth-label" for="auth-login-pwd">Password</label>
+                <a href="#" class="auth-forgot-link" onclick="event.preventDefault();">Forgot?</a>
+              </div>
+              <input type="password" class="auth-input" id="auth-login-pwd" placeholder="••••••••" value="quantum2026" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-auth-submit" id="btn-screen-login">
+              <span>LOGIN</span> &rarr;
+            </button>
+
+            <div class="auth-switch-prompt">
+              Don't have an account? <a href="#" id="auth-switch-to-signup">Sign Up</a>
+            </div>
+          </form>
+
+          <!-- SIGN UP FORM -->
+          <form id="auth-screen-signup-form" class="auth-form-body" style="display:none;">
+            <div class="auth-greeting">
+              <h3>Create your account 🚀</h3>
+              <p>Start your journey into quantum computing.</p>
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label" for="auth-signup-name">Full Name</label>
+              <input type="text" class="auth-input" id="auth-signup-name" placeholder="e.g. Richard Feynman" required autocomplete="name">
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label" for="auth-signup-email">Email or Username</label>
+              <input type="text" class="auth-input" id="auth-signup-email" placeholder="feynman@quantum.edu" required autocomplete="username">
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label" for="auth-signup-pwd">Password</label>
+              <input type="password" class="auth-input" id="auth-signup-pwd" placeholder="Minimum 6 characters" required autocomplete="new-password">
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label" for="auth-signup-confirm-pwd">Confirm Password</label>
+              <input type="password" class="auth-input" id="auth-signup-confirm-pwd" placeholder="Repeat your password" required autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="btn-auth-submit" id="btn-screen-signup">
+              <span>CREATE ACCOUNT</span> &rarr;
+            </button>
+
+            <div class="auth-switch-prompt">
+              Already have an account? <a href="#" id="auth-switch-to-login">Login</a>
+            </div>
+          </form>
+        </div>
+
+        <button class="btn-auth-back" id="auth-back-to-landing-btn">
+          &larr; Back to Welcome Page
+        </button>
+      </div>
+    </div>
+
+    <!-- =================================================================
+         3. ROLE SELECTION OVERLAY (Student / Teacher Selection)
+         ================================================================= -->
+    <div id="role-selection-overlay" class="role-overlay" style="display:none;">
+      <div class="role-overlay-inner">
+
+        <!-- Branding -->
+        <div class="role-hero-brand">
+          <div class="brand-atom role-atom">
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-orbit pink-orbit"></div>
+            <div class="atom-core pink-core"></div>
+          </div>
+          <span class="role-brand-text">Le<span class="pink-accent-text">QC</span></span>
+        </div>
+
+        <h1 class="role-hero-title">LeQC</h1>
+        <p class="role-hero-subtitle" style="font-family:var(--font-heading); font-size:1.15rem; font-weight:700; color:#EC4899; margin-bottom:12px;">Learn Quantum Computing</p>
+        <p class="role-hero-desc">
+          Select your profile to enter the interactive quantum platform.
+        </p>
+
+        <!-- Role Cards -->
+        <div class="role-cards-row">
+
+          <div class="role-card" id="student-role-card">
+            <div class="role-card-icon student">👨‍🎓</div>
+            <h2 class="role-card-title">Student</h2>
+            <p class="role-card-desc">
+              Learn quantum computing through an interactive learning journey.
+            </p>
+            <ul class="role-card-features">
+              <li>▶ Gamified sequential levels &amp; missions</li>
+              <li>▶ Visual circuit builder &amp; 3D Bloch sphere</li>
+              <li>▶ Local Qiskit Aer simulation &amp; statevectors</li>
+              <li>▶ AI Tutor guidance &amp; level unlock challenges</li>
+            </ul>
+            <button class="btn-role-enter student" id="enter-student-btn">
+              ENTER AS STUDENT &rarr;
+            </button>
+          </div>
+
+          <div class="role-divider">
+            <div class="role-divider-line"></div>
+            <span class="role-divider-text">or</span>
+            <div class="role-divider-line"></div>
+          </div>
+
+          <div class="role-card teacher" id="teacher-role-card">
+            <div class="role-card-icon teacher">👩‍🏫</div>
+            <h2 class="role-card-title">Teacher</h2>
+            <p class="role-card-desc">
+              Monitor student learning, progress, and performance.
+            </p>
+            <ul class="role-card-features">
+              <li>▶ Class-level performance analytics</li>
+              <li>▶ Individual student Quantum Journey paths</li>
+              <li>▶ Real-time learning gaps &amp; stuck points</li>
+              <li>▶ AI pedagogical recommendations</li>
+            </ul>
+            <button class="btn-role-enter teacher" id="enter-teacher-btn">
+              ENTER AS TEACHER &rarr;
+            </button>
+          </div>
+
+        </div>
+
+        <button class="btn-auth-back" id="role-back-to-auth-btn" style="margin-top:16px;">
+          &larr; Switch Account / Sign Out
+        </button>
+
+        <p class="role-footer-note">
+          &#8987; Prototype demonstration &mdash; select a profile to launch your workspace.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+      <div class="nav-brand" id="brand-home-btn" title="LeQC — Learn Quantum Computing">
+        <div class="brand-atom">
+          <div class="atom-orbit"></div>
+          <div class="atom-orbit"></div>
+          <div class="atom-orbit"></div>
+          <div class="atom-core"></div>
+        </div>
+        <span class="brand-text">Le<span style="color:var(--color-secondary);">QC</span></span>
+        <span class="brand-badge">LEARN</span>
+      </div>
+
+      <!-- Student Navigation Tabs -->
+      <nav class="nav-tabs student-nav" id="student-nav" aria-label="Student Navigation" style="display:none;">
+        <button class="nav-tab-btn active" data-view="dashboard" id="tab-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Dashboard
+        </button>
+        <button class="nav-tab-btn" data-view="learn" id="tab-learn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Learn Academy
+        </button>
+        <button class="nav-tab-btn" data-view="builder" id="tab-builder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+          Circuit Studio
+        </button>
+        <button class="nav-tab-btn" data-view="codelab" id="tab-codelab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          Code Lab
+        </button>
+        <button class="nav-tab-btn" data-view="challenges" id="tab-challenges">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Challenges
+        </button>
+        <button class="nav-tab-btn" data-view="progress" id="tab-progress">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Progress
+        </button>
+      </nav>
+
+      <!-- Teacher Navigation Tabs -->
+      <nav class="nav-tabs teacher-nav" id="teacher-nav" aria-label="Teacher Navigation" style="display:none;">
+        <button class="nav-tab-btn active" data-teacher-view="teacher-dashboard" id="tab-teacher-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Dashboard
+        </button>
+        <button class="nav-tab-btn" data-teacher-view="teacher-students" id="tab-teacher-students">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Students
+        </button>
+        <button class="nav-tab-btn" data-teacher-view="teacher-analytics" id="tab-teacher-analytics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Analytics
+        </button>
+        <button class="nav-tab-btn" data-teacher-view="teacher-insights" id="tab-teacher-insights">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          Learning Insights
+        </button>
+      </nav>
+
+      <!-- Nav Actions Right -->
+      <div class="nav-actions">
+        <!-- Role Switcher (visible after role selected) -->
+        <button class="btn-switch-role" id="switch-role-btn" style="display:none;" title="Switch Role / Back to Welcome">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span id="switch-role-label">Switch Role</span>
+        </button>
+        <div class="engine-pill" id="engine-status-pill" title="Backend Quantum Simulator">
+          <span class="pulse-dot"></span>
+          <span id="engine-name-label">Qiskit Aer 2.5</span>
+        </div>
+
+        <button class="btn-ai-tutor" id="open-ai-tutor-btn" title="Open AI Quantum Tutor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><rect x="4" y="8" width="16" height="12" rx="2"></rect><circle cx="9" cy="13" r="1"></circle><circle cx="15" cy="13" r="1"></circle><path d="M9 17h6"></path></svg>
+          AI Tutor
+        </button>
+
+        <!-- Theme Toggle Button (Light / Dark Mode) -->
+        <button class="btn-icon theme-toggle-btn" id="theme-toggle-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode">
+          <span class="theme-icon-sun">☀️</span>
+          <span class="theme-icon-moon">🌙</span>
+        </button>
+
+        <button class="btn-icon" id="settings-modal-btn" title="Settings & Gemini API Key">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+
+        <!-- Auth Area: Guest -->
+        <div class="auth-nav-area" id="auth-nav-guest">
+          <button class="btn-secondary" id="nav-login-btn" style="padding: 6px 14px; font-size: 0.85rem;">Sign In</button>
+          <button class="btn-primary" id="nav-register-btn" style="padding: 6px 14px; font-size: 0.85rem;">Register</button>
+        </div>
+
+        <!-- Auth Area: Authenticated User Pill -->
+        <div class="auth-user-pill" id="auth-nav-user" style="display:none;">
+          <div class="user-profile-badge" id="nav-user-badge">
+            <span class="user-avatar-circle" id="nav-user-avatar">⚛️</span>
+            <span id="nav-user-name" style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Learner</span>
+          </div>
+          <button class="btn-secondary" id="nav-my-circuits-btn" title="View Saved Circuits" style="padding: 6px 10px; font-size: 0.82rem;">
+            📂 Circuits
+          </button>
+          <button class="btn-secondary" id="nav-logout-btn" title="Log Out" style="padding: 6px 10px; font-size: 0.82rem;">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Views Container -->
+    <main class="main-view-container">
+
+      <!-- =================================================================
+           VIEW 1: DASHBOARD
+           ================================================================= -->
+      <section class="view-section active" id="view-dashboard">
+        
+        <!-- Student Identity HUD & Stats Strip -->
+        <div class="student-hud-header">
+          <div class="student-hud-top">
+            <div class="student-identity-row">
+              <div class="student-avatar-orb" id="hud-avatar">AS</div>
+              <div class="student-welcome-text">
+                <h1 id="hud-welcome-title">Welcome back, <span id="hud-student-name" style="color:var(--color-secondary);">Aarav</span>! 👋</h1>
+                <p id="hud-welcome-sub">Continue your journey into quantum computing.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="student-kpi-strip">
+            <div class="hud-kpi-chip">
+              <div class="hud-kpi-icon streak">
+                <span class="fire-anim">🔥</span>
+              </div>
+              <div class="hud-kpi-details">
+                <span class="hud-kpi-val" id="hud-streak-val">4 Days</span>
+                <span class="hud-kpi-lbl">Current Streak</span>
+              </div>
+            </div>
+
+            <div class="hud-kpi-chip">
+              <div class="hud-kpi-icon xp">⚡</div>
+              <div class="hud-kpi-details">
+                <span class="hud-kpi-val" id="hud-xp-val">280 XP</span>
+                <span class="hud-kpi-lbl" id="hud-rank-val">Quantum Explorer</span>
+              </div>
+            </div>
+
+            <div class="hud-kpi-chip">
+              <div class="hud-kpi-icon progress">🎯</div>
+              <div class="hud-kpi-details">
+                <span class="hud-kpi-val" id="hud-progress-val">28%</span>
+                <span class="hud-kpi-lbl">Overall Progress</span>
+              </div>
+            </div>
+
+            <div class="hud-kpi-chip">
+              <div class="hud-kpi-icon quiz">🧠</div>
+              <div class="hud-kpi-details">
+                <span class="hud-kpi-val" id="hud-quiz-val">68%</span>
+                <span class="hud-kpi-lbl">Quiz Mastery</span>
+              </div>
+            </div>
+
+            <div class="hud-kpi-chip">
+              <div class="hud-kpi-icon circuits">📂</div>
+              <div class="hud-kpi-details">
+                <span class="hud-kpi-val" id="hud-circuits-val">2</span>
+                <span class="hud-kpi-lbl">Saved Circuits</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Next Mission Banner -->
+        <div class="recommended-activity-banner" id="recommended-activity-banner">
+          <div class="rec-banner-left">
+            <div class="rec-banner-badge" id="rec-banner-icon">🟠</div>
+            <div class="rec-banner-info">
+              <h3 id="rec-banner-heading">
+                <span id="rec-banner-title">Level 3: Superposition</span>
+                <span class="rec-tag-pill" id="rec-banner-tag">60% Complete</span>
+              </h3>
+              <p id="rec-banner-desc">
+                You've completed the concept lesson, circuit experiment, and simulation analysis.
+                Solve the Level Challenge to master Superposition and unlock Level 4: Quantum Gates (+50 XP)!
+              </p>
+            </div>
+          </div>
+          <div class="rec-banner-actions">
+            <button class="btn-rec-cta" id="rec-banner-cta-btn">
+              <span>Take Level Challenge</span> &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- =================================================================
+             MAIN VISUAL ELEMENT: THE QUANTUM LEARNING JOURNEY (GAME MAP)
+             ================================================================= -->
+        <section class="quantum-journey-section">
+          <div class="journey-section-header">
+            <span class="journey-badge-pill">🗺️ SEQUENTIAL LEARNING ADVENTURE</span>
+            <h2 class="journey-section-title">Quantum Learning Journey</h2>
+            <p class="journey-section-desc">
+              Progress from <strong>Level 1 (Quantum Basics)</strong> at the top down through the quantum realms to reach <strong>Quantum Mastery</strong> at the bottom.
+            </p>
+          </div>
+
+          <!-- Winding Game Map World Container with Quantum Decor -->
+          <div class="quantum-world-map" id="quantum-world-map">
+            
+            <!-- Atmospheric Background Decor (Low Opacity Ambient Quantum Elements) -->
+            <div class="quantum-map-atmosphere" aria-hidden="true">
+              <!-- Floating Dirac Kets & Math -->
+              <span class="atm-item atm-ket-0">|0⟩</span>
+              <span class="atm-item atm-ket-1">|1⟩</span>
+              <span class="atm-item atm-ket-psi">|ψ⟩ = α|0⟩ + β|1⟩</span>
+              <span class="atm-item atm-ket-plus">|+⟩ = (|0⟩+|1⟩)/√2</span>
+              <span class="atm-item atm-ket-bell">|Φ⁺⟩ = (|00⟩+|11⟩)/√2</span>
+              <span class="atm-item atm-eq-born">P(x) = |⟨x|ψ⟩|²</span>
+              <span class="atm-item atm-eq-h">H|0⟩ = |+⟩</span>
+              <span class="atm-item atm-eq-hbar">iℏ ∂/∂t |ψ⟩ = Ĥ|ψ⟩</span>
+              <span class="atm-item atm-ket-ghz">|GHZ⟩ = (|000⟩+|111⟩)/√2</span>
+              
+              <!-- Subtle Wireframe Bloch Sphere & Coordinate Rings -->
+              <div class="atm-bloch-ring atm-bloch-1"></div>
+              <div class="atm-bloch-ring atm-bloch-2"></div>
+              <div class="atm-bloch-ring atm-bloch-3"></div>
+              
+              <!-- Circuit Wire Traces with Gates -->
+              <div class="atm-circuit-line atm-line-1">
+                <span class="atm-gate-box">H</span>
+                <span class="atm-wire"></span>
+                <span class="atm-gate-ctrl">●</span>
+                <span class="atm-wire"></span>
+                <span class="atm-gate-target">⊕</span>
+              </div>
+              <div class="atm-circuit-line atm-line-2">
+                <span class="atm-gate-box">X</span>
+                <span class="atm-wire"></span>
+                <span class="atm-gate-box">Z</span>
+                <span class="atm-wire"></span>
+                <span class="atm-gate-box">S</span>
+              </div>
+              
+              <!-- Waveform / Particle grid overlay -->
+              <div class="atm-grid-overlay"></div>
+            </div>
+
+            <!-- Dynamic Connecting SVG Canvas (Winding Curved Path) -->
+            <svg class="quantum-map-svg" id="quantum-map-svg" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="pathGradientCompleted" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981" />
+                  <stop offset="100%" stop-color="#059669" />
+                </linearGradient>
+                <linearGradient id="pathGradientActive" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981" />
+                  <stop offset="50%" stop-color="#f97316" />
+                  <stop offset="100%" stop-color="#2563eb" />
+                </linearGradient>
+                <filter id="glowCompleted" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter id="glowActive" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <path id="svg-path-completed" class="svg-track-completed" d="" />
+              <path id="svg-path-active" class="svg-track-active" d="" />
+              <path id="svg-path-locked" class="svg-track-locked" d="" />
+            </svg>
+
+            <!-- Winding Game Path Flow (TOP TO BOTTOM) -->
+            <div class="quantum-map-flow" id="quantum-journey-levels-flow">
+              <!-- Dynamically populated by JS from QUBITLAB_DEMO -->
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Quick Circuit Launchpad -->
+        <div class="section-header" style="margin-top:20px;">
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Interactive Circuit Launchpad
+          </h2>
+          <span class="section-link" id="open-studio-link">Open Blank Studio →</span>
+        </div>
+
+        <div class="launchpad-grid">
+          <div class="launch-card" data-preset="superposition_plus">
+            <div class="launch-card-header">
+              <h3 class="launch-title">Superposition |+⟩</h3>
+              <span class="launch-badge">1 Qubit • Level 3</span>
+            </div>
+            <p class="launch-desc">Splits ground state |0⟩ into equal 50/50 probability using the Hadamard (H) gate.</p>
+            <div class="launch-footer">
+              <span>H Gate</span>
+              <span>Launch in Studio →</span>
+            </div>
+          </div>
+
+          <div class="launch-card" data-preset="bell_phi_plus">
+            <div class="launch-card-header">
+              <h3 class="launch-title">Bell State |Φ+⟩</h3>
+              <span class="launch-badge">2 Qubits • Level 6</span>
+            </div>
+            <p class="launch-desc">Maximal quantum entanglement (|00⟩ + |11⟩)/√2 using Hadamard and CNOT gates.</p>
+            <div class="launch-footer">
+              <span>H → CNOT</span>
+              <span>Launch in Studio →</span>
+            </div>
+          </div>
+
+          <div class="launch-card" data-preset="ghz_state">
+            <div class="launch-card-header">
+              <h3 class="launch-title">3-Qubit GHZ State</h3>
+              <span class="launch-badge">3 Qubits • Advanced</span>
+            </div>
+            <p class="launch-desc">Tripartite entangled state (|000⟩ + |111⟩)/√2 with non-local quantum correlations.</p>
+            <div class="launch-footer">
+              <span>H → 2× CNOT</span>
+              <span>Launch in Studio →</span>
+            </div>
+          </div>
+
+          <div class="launch-card" data-preset="grover_search">
+            <div class="launch-card-header">
+              <h3 class="launch-title">Grover 2-Qubit Search</h3>
+              <span class="launch-badge">2 Qubits • Level 7</span>
+            </div>
+            <p class="launch-desc">Amplifies target state |11⟩ to 100% probability using an oracle and diffusion operator.</p>
+            <div class="launch-footer">
+              <span>Oracle + Diffusion</span>
+              <span>Launch in Studio →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Learning Activity Feed -->
+        <div class="roadmap-container" style="margin-top: 24px;">
+          <div class="section-header">
+            <h2 class="section-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              Recent Learning Activity
+            </h2>
+            <span style="font-size:0.8rem; color:var(--text-dim);" id="dashboard-activity-status">Personalized Event History</span>
+          </div>
+          <div class="activity-feed-list" id="dashboard-activity-feed">
+            <div class="empty-state-box">Loading student activity...</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =================================================================
+           TEACHER VIEW 1: TEACHER DASHBOARD
+           ================================================================= -->
+      <section class="view-section" id="view-teacher-dashboard">
+        <div class="teacher-page-header">
+          <div>
+            <h1 class="teacher-page-title">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              Teacher Dashboard
+            </h1>
+            <p class="teacher-page-subtitle">Monitor student progress, identify learning gaps, and support your quantum computing learners.</p>
+          </div>
+          <div class="teacher-profile-pill">
+            <div class="teacher-avatar">RK</div>
+            <div>
+              <div style="font-weight:700; font-size:0.9rem; color:var(--color-text);">Prof. Radha Krishnan</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Quantum Computing &amp; Algorithms</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Class Overview Cards -->
+        <div class="teacher-kpi-grid">
+          <div class="teacher-kpi-card">
+            <div class="teacher-kpi-icon" style="background:rgba(37,99,235,0.1); color:var(--color-accent);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="teacher-kpi-value">24</div>
+            <div class="teacher-kpi-label">Total Students</div>
+          </div>
+          <div class="teacher-kpi-card">
+            <div class="teacher-kpi-icon" style="background:rgba(16,185,129,0.1); color:#10b981;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            </div>
+            <div class="teacher-kpi-value">18</div>
+            <div class="teacher-kpi-label">Active Today</div>
+          </div>
+          <div class="teacher-kpi-card">
+            <div class="teacher-kpi-icon" style="background:rgba(249,115,22,0.1); color:var(--color-secondary);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
+            <div class="teacher-kpi-value">42%</div>
+            <div class="teacher-kpi-label">Avg. Progress</div>
+          </div>
+          <div class="teacher-kpi-card">
+            <div class="teacher-kpi-icon" style="background:rgba(55,65,81,0.1); color:var(--color-primary);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div class="teacher-kpi-value">71%</div>
+            <div class="teacher-kpi-label">Avg. Quiz Score</div>
+          </div>
+        </div>
+
+        <!-- Two-Column: Students Needing Attention + Module Completion -->
+        <div class="teacher-dash-grid">
+
+          <!-- Students Needing Attention -->
+          <div class="teacher-card">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">
+                <span style="color:#ef4444;">&#9888;</span> Students Needing Attention
+              </h3>
+            </div>
+            <div class="teacher-attention-list">
+              <div class="attention-item" data-student-id="3">
+                <div class="attention-avatar" style="background:rgba(239,68,68,0.12); color:#dc2626;">RM</div>
+                <div class="attention-info">
+                  <div class="attention-name">Riya Mehta</div>
+                  <div class="attention-issue">19% progress &bull; Quiz avg 61% &bull; No challenges completed</div>
+                </div>
+                <button class="btn-view-student" onclick="window.teacherViewStudent(3)">View &rarr;</button>
+              </div>
+              <div class="attention-item" data-student-id="7">
+                <div class="attention-avatar" style="background:rgba(239,68,68,0.12); color:#dc2626;">PN</div>
+                <div class="attention-info">
+                  <div class="attention-name">Priya Nair</div>
+                  <div class="attention-issue">12% progress &bull; Quiz avg 55% &bull; Inactive 3 days</div>
+                </div>
+                <button class="btn-view-student" onclick="window.teacherViewStudent(7)">View &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module Completion Bar Chart -->
+          <div class="teacher-card">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">Class Module Completion</h3>
+            </div>
+            <div class="teacher-module-bars" id="teacher-module-bars">
+              <div class="t-module-row"><span class="t-module-name">Quantum Basics</span><div class="t-bar-track"><div class="t-bar-fill" style="width:92%;">92%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Superposition</span><div class="t-bar-track"><div class="t-bar-fill" style="width:78%;">78%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Quantum Gates</span><div class="t-bar-track"><div class="t-bar-fill" style="width:55%; background:var(--color-secondary);">55%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Measurement</span><div class="t-bar-track"><div class="t-bar-fill" style="width:40%; background:var(--color-secondary);">40%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Entanglement</span><div class="t-bar-track"><div class="t-bar-fill" style="width:24%; background:#ef4444;">24%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Grover Algorithm</span><div class="t-bar-track"><div class="t-bar-fill" style="width:10%; background:#ef4444;">10%</div></div></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Top Performers + Quick Actions -->
+        <div class="teacher-dash-grid">
+          <div class="teacher-card">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">&#127942; Top Performers</h3>
+            </div>
+            <div class="teacher-attention-list">
+              <div class="attention-item" data-student-id="8">
+                <div class="attention-avatar" style="background:rgba(37,99,235,0.12); color:var(--color-accent);">AR</div>
+                <div class="attention-info">
+                  <div class="attention-name">Arjun Reddy</div>
+                  <div class="attention-issue">72% progress &bull; Quiz avg 85% &bull; 4 challenges done</div>
+                </div>
+                <button class="btn-view-student" onclick="window.teacherViewStudent(8)">View &rarr;</button>
+              </div>
+              <div class="attention-item" data-student-id="4">
+                <div class="attention-avatar" style="background:rgba(37,99,235,0.12); color:var(--color-accent);">KS</div>
+                <div class="attention-info">
+                  <div class="attention-name">Kabir Shah</div>
+                  <div class="attention-issue">63% progress &bull; Quiz avg 82% &bull; 3 challenges done</div>
+                </div>
+                <button class="btn-view-student" onclick="window.teacherViewStudent(4)">View &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="teacher-card">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">&#128161; Learning Insights</h3>
+            </div>
+            <div style="padding: 8px 0; display:flex; flex-direction:column; gap:12px;">
+              <div class="insight-item">
+                <div class="insight-dot" style="background:#ef4444;"></div>
+                <div class="insight-text"><strong>Superposition</strong> has the lowest quiz completion rate (60%). Consider a guided review session.</div>
+              </div>
+              <div class="insight-item">
+                <div class="insight-dot" style="background:var(--color-secondary);"></div>
+                <div class="insight-text"><strong>2 students</strong> are showing early signs of disengagement (inactive 3+ days).</div>
+              </div>
+              <div class="insight-item">
+                <div class="insight-dot" style="background:var(--color-accent);"></div>
+                <div class="insight-text"><strong>Grover Algorithm</strong> has only 10% completion &mdash; advanced students are ready to begin.</div>
+              </div>
+              <div class="insight-item">
+                <div class="insight-dot" style="background:#10b981;"></div>
+                <div class="insight-text"><strong>Quantum Basics</strong> has 92% completion &mdash; class is solidly progressing from fundamentals.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =================================================================
+           TEACHER VIEW 2: STUDENT LIST
+           ================================================================= -->
+      <section class="view-section" id="view-teacher-students">
+        <div class="teacher-page-header">
+          <div>
+            <h1 class="teacher-page-title">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              Student Progress
+            </h1>
+            <p class="teacher-page-subtitle">Monitor individual learner performance and module completion.</p>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:0.85rem; color:var(--text-muted);">Showing 10 of 24 students &bull; <span style="color:var(--color-accent); font-weight:600;">2 need attention</span></span>
+          </div>
+        </div>
+
+        <!-- Student Table -->
+        <div class="teacher-card" style="padding:0; overflow:hidden;">
+          <table class="student-table" id="student-roster-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Progress</th>
+                <th>Quiz Score</th>
+                <th>Modules</th>
+                <th>Challenges</th>
+                <th>Last Active</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="student-roster-tbody">
+              <!-- Dynamically rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TEACHER VIEW 3: ANALYTICS
+           ================================================================= -->
+      <section class="view-section" id="view-teacher-analytics">
+        <div class="teacher-page-header">
+          <div>
+            <h1 class="teacher-page-title">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              Class Analytics
+            </h1>
+            <p class="teacher-page-subtitle">Visualize learning patterns and identify areas where the class needs support.</p>
+          </div>
+        </div>
+
+        <div class="teacher-analytics-grid">
+          <!-- Module Completion Chart -->
+          <div class="teacher-card">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">Module Completion by Class</h3>
+            </div>
+            <div class="teacher-module-bars">
+              <div class="t-module-row"><span class="t-module-name">Quantum Basics</span><div class="t-bar-track"><div class="t-bar-fill" style="width:92%; background:var(--color-accent);">92%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Superposition</span><div class="t-bar-track"><div class="t-bar-fill" style="width:78%; background:var(--color-accent);">78%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Quantum Gates</span><div class="t-bar-track"><div class="t-bar-fill" style="width:55%; background:var(--color-secondary);">55%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Measurement</span><div class="t-bar-track"><div class="t-bar-fill" style="width:40%; background:var(--color-secondary);">40%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Entanglement</span><div class="t-bar-track"><div class="t-bar-fill" style="width:24%; background:#ef4444;">24%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Grover Algorithm</span><div class="t-bar-track"><div class="t-bar-fill" style="width:10%; background:#ef4444;">10%</div></div></div>
+            </div>
+          </div>
+
+          <!-- Quiz Average by Module -->
+          <div class="teacher-card">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">Quiz Average by Module</h3>
+            </div>
+            <div class="teacher-module-bars">
+              <div class="t-module-row"><span class="t-module-name">Quantum Basics</span><div class="t-bar-track"><div class="t-bar-fill" style="width:76%; background:var(--color-accent);">76%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Superposition</span><div class="t-bar-track"><div class="t-bar-fill" style="width:70%; background:var(--color-accent);">70%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Quantum Gates</span><div class="t-bar-track"><div class="t-bar-fill" style="width:72%; background:var(--color-accent);">72%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Measurement</span><div class="t-bar-track"><div class="t-bar-fill" style="width:68%; background:var(--color-secondary);">68%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Entanglement</span><div class="t-bar-track"><div class="t-bar-fill" style="width:65%; background:var(--color-secondary);">65%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Grover Algorithm</span><div class="t-bar-track"><div class="t-bar-fill" style="width:58%; background:#ef4444;">58%</div></div></div>
+            </div>
+          </div>
+
+          <!-- Challenge Completion -->
+          <div class="teacher-card">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">Challenge Completion Rate</h3>
+            </div>
+            <div class="teacher-module-bars">
+              <div class="t-module-row"><span class="t-module-name">Qubit State</span><div class="t-bar-track"><div class="t-bar-fill" style="width:82%; background:var(--color-accent);">82%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Superposition</span><div class="t-bar-track"><div class="t-bar-fill" style="width:60%; background:var(--color-secondary);">60%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Quantum Gate</span><div class="t-bar-track"><div class="t-bar-fill" style="width:43%; background:var(--color-secondary);">43%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Bell State</span><div class="t-bar-track"><div class="t-bar-fill" style="width:28%; background:#ef4444;">28%</div></div></div>
+              <div class="t-module-row"><span class="t-module-name">Grover</span><div class="t-bar-track"><div class="t-bar-fill" style="width:10%; background:#ef4444;">10%</div></div></div>
+            </div>
+          </div>
+
+          <!-- Individual Progress Distribution -->
+          <div class="teacher-card">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">Student Progress Distribution</h3>
+            </div>
+            <div style="padding:8px 0;">
+              <div class="student-dist-row"><span class="dist-label">&#128994; Advanced (60-100%)</span><span class="dist-count">3 students</span><div class="dist-bar" style="width:26%; background:#10b981;"></div></div>
+              <div class="student-dist-row"><span class="dist-label">&#128993; Mid-Level (35-59%)</span><span class="dist-count">8 students</span><div class="dist-bar" style="width:56%; background:var(--color-secondary);"></div></div>
+              <div class="student-dist-row"><span class="dist-label">&#128308; Beginner (0-34%)</span><span class="dist-count">13 students</span><div class="dist-bar" style="width:76%; background:#ef4444;"></div></div>
+            </div>
+            <div class="insight-item" style="margin-top:16px;">
+              <div class="insight-dot" style="background:#ef4444;"></div>
+              <div class="insight-text">Over half the class is still in early stages &mdash; prioritize foundational Superposition and Gate concepts.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TEACHER VIEW 4: LEARNING INSIGHTS
+           ================================================================= -->
+      <section class="view-section" id="view-teacher-insights">
+        <div class="teacher-page-header">
+          <div>
+            <h1 class="teacher-page-title">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              Learning Insights
+            </h1>
+            <p class="teacher-page-subtitle">AI-identified patterns and actionable recommendations for your class.</p>
+          </div>
+        </div>
+
+        <div class="teacher-analytics-grid">
+          <div class="teacher-card" style="grid-column: 1/-1;">
+            <div class="teacher-card-header">
+              <h3 class="teacher-card-title">&#129302; AI-Generated Class Recommendations</h3>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:16px; padding:8px 0;">
+              <div class="ai-insight-card" style="border-left:3px solid #ef4444;">
+                <div class="ai-insight-icon" style="background:rgba(239,68,68,0.1); color:#ef4444;">&#9888;</div>
+                <div class="ai-insight-content">
+                  <div class="ai-insight-title">Superposition Concept Gap Detected</div>
+                  <div class="ai-insight-body">Class average on Superposition quiz is 70% — below the 75% mastery threshold. 5 students scored below 65%. Recommend scheduling a Hadamard Gate visualization session or assigning the interactive Bloch Sphere exercise.</div>
+                  <div class="ai-insight-action">Affected students: Aarav Sharma, Riya Mehta, Meera Kulkarni, Ishita Joshi, Priya Nair</div>
+                </div>
+              </div>
+              <div class="ai-insight-card" style="border-left:3px solid var(--color-secondary);">
+                <div class="ai-insight-icon" style="background:rgba(249,115,22,0.1); color:var(--color-secondary);">&#128336;</div>
+                <div class="ai-insight-content">
+                  <div class="ai-insight-title">Engagement Alert: 2 Students Inactive</div>
+                  <div class="ai-insight-body">Riya Mehta (inactive 1 day) and Priya Nair (inactive 3 days) have not logged in recently. Early disengagement can indicate confusion with core concepts or lack of motivation.</div>
+                  <div class="ai-insight-action">Recommendation: Send a personal check-in or assign a beginner-friendly circuit challenge to re-engage.</div>
+                </div>
+              </div>
+              <div class="ai-insight-card" style="border-left:3px solid var(--color-accent);">
+                <div class="ai-insight-icon" style="background:rgba(37,99,235,0.1); color:var(--color-accent);">&#127942;</div>
+                <div class="ai-insight-content">
+                  <div class="ai-insight-title">Advanced Learners Ready for Grover Algorithm</div>
+                  <div class="ai-insight-body">3 students (Arjun Reddy, Kabir Shah, Ananya Patil) have completed 4+ modules with quiz averages above 74%. They are ready for Grover Search and advanced quantum algorithm content.</div>
+                  <div class="ai-insight-action">Recommendation: Assign the Grover 2-Qubit Search challenge and the advanced circuit optimization lab.</div>
+                </div>
+              </div>
+              <div class="ai-insight-card" style="border-left:3px solid #10b981;">
+                <div class="ai-insight-icon" style="background:rgba(16,185,129,0.1); color:#10b981;">&#128200;</div>
+                <div class="ai-insight-content">
+                  <div class="ai-insight-title">Class Progress Milestone: 92% Basics Completion</div>
+                  <div class="ai-insight-body">Quantum Computing Basics has been completed by 92% of the class — this is excellent foundational coverage. The class is ready to deepen its focus on Superposition and Quantum Gates.</div>
+                  <div class="ai-insight-action">Next milestone to target: Bring Superposition completion from 78% to 90% over the next 2 weeks.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 2: INTERACTIVE LEARNING ACADEMY
+           ================================================================= -->
+      <section class="view-section" id="view-learn">
+        <div class="academy-layout">
+          
+          <!-- Module Navigation Sidebar -->
+          <aside class="academy-sidebar">
+            <div class="academy-sidebar-header">Curriculum Modules</div>
+            <div class="module-nav-list" id="module-nav-list">
+              <!-- Dynamically populated -->
+            </div>
+          </aside>
+
+          <!-- Module Main Content Pane -->
+          <article class="academy-content-pane">
+            <div class="academy-module-header">
+              <div class="academy-module-meta">
+                <span class="module-cat-pill" id="module-category-pill">Fundamentals</span>
+                <span class="roadmap-step-status" id="module-duration-pill">5 min</span>
+              </div>
+              <h1 class="academy-module-title" id="module-title-heading">What is a Qubit?</h1>
+              <p class="academy-module-subtitle" id="module-subtitle-heading">Classical Bits vs. Quantum Bits & The Bloch Sphere</p>
+            </div>
+
+            <!-- Module Body Content Stream -->
+            <div id="module-content-stream">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Interactive Quantum State Playground -->
+            <div class="interactive-playground-box">
+              <div class="playground-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Interactive Superposition Simulator
+              </div>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
+                Drag the superposition angle &theta; to observe the probability amplitudes shift continuously from pure |0&rang; to equal superposition |+&rang; and pure |1&rang;.
+              </p>
+
+              <div class="slider-group">
+                <div class="slider-label-row">
+                  <span>State Angle &theta;: <strong id="slider-theta-val" style="color:var(--color-accent);">90&deg; (&pi;/2)</strong></span>
+                  <span id="slider-state-label" style="color:var(--color-accent); font-weight:700;">Equal Superposition |+&rang;</span>
+                </div>
+                <input type="range" class="quantum-slider" id="superposition-theta-slider" min="0" max="180" value="90">
+              </div>
+
+              <div class="state-equation-display" id="interactive-state-equation">
+                |&psi;&rang; = 0.707 |0&rang; + 0.707 |1&rang;
+              </div>
+
+              <div class="split-probs-bar">
+                <div class="split-p0" id="prob-bar-0" style="width: 50%;">|0&rang;: 50.0%</div>
+                <div class="split-p1" id="prob-bar-1" style="width: 50%;">|1&rang;: 50.0%</div>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+                <button class="btn-primary" id="academy-open-circuit-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line></svg>
+                  Build This State in Studio &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Concept Check Mini-Quiz -->
+            <div class="module-quiz-box" id="module-quiz-box">
+              <div class="quiz-header">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Concept Checkpoint
+              </div>
+              <p class="quiz-question" id="quiz-question-text">Loading question...</p>
+              <div class="quiz-options" id="quiz-options-list"></div>
+              <div class="quiz-explanation" id="quiz-explanation-box"></div>
+            </div>
+
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 3: QUANTUM CIRCUIT STUDIO
+           ================================================================= -->
+      <section class="view-section" id="view-builder">
+        <div class="studio-layout">
+
+          <!-- Studio Toolbar -->
+          <div class="studio-toolbar">
+            <div class="toolbar-group">
+              <span class="toolbar-label">Qubits:</span>
+              <select class="select-quantum" id="studio-qubits-select">
+                <option value="1">1 Qubit</option>
+                <option value="2" selected>2 Qubits</option>
+                <option value="3">3 Qubits</option>
+                <option value="4">4 Qubits</option>
+                <option value="5">5 Qubits</option>
+              </select>
+
+              <span class="toolbar-label" style="margin-left:8px;">Preset:</span>
+              <select class="select-quantum" id="studio-presets-select">
+                <option value="">-- Choose Template --</option>
+                <option value="bell_phi_plus">Bell State |Φ+⟩</option>
+                <option value="bell_psi_plus">Bell State |Ψ+⟩</option>
+                <option value="superposition_plus">Superposition |+⟩</option>
+                <option value="ghz_state">3-Qubit GHZ State</option>
+                <option value="quantum_teleportation">Quantum Teleportation</option>
+                <option value="grover_search">Grover 2-Qubit Search</option>
+                <option value="quantum_rng">Quantum Random Number</option>
+              </select>
+            </div>
+
+            <div class="toolbar-group">
+              <button class="btn-secondary" id="studio-add-step-btn" title="Add Step Column">+ Step</button>
+              <button class="btn-secondary" id="studio-remove-step-btn" title="Remove Last Step">- Step</button>
+              <button class="btn-secondary" id="studio-optimize-btn" title="AI & Matrix Gate Reduction">
+                ⚡ Optimize
+              </button>
+              <button class="btn-secondary" id="studio-save-circuit-btn" title="Save Circuit to Personal Account">
+                💾 Save
+              </button>
+              <button class="btn-secondary" id="studio-my-circuits-btn" title="Open Saved Circuits">
+                📂 My Circuits
+              </button>
+              <button class="btn-secondary" id="studio-clear-btn" title="Reset Circuit">
+                Clear
+              </button>
+              <button class="btn-run-sim" id="studio-run-sim-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Run Simulation (1024 shots)
+              </button>
+            </div>
+          </div>
+
+          <!-- Gate Palette -->
+          <div class="gate-palette">
+            <span class="gate-palette-title">Gate Palette:</span>
+            
+            <div class="gate-token gate-h" data-gate="H" title="Hadamard Gate: Creates equal superposition (|0⟩+|1⟩)/√2">H</div>
+            <div class="gate-token gate-x" data-gate="X" title="Pauli-X: Quantum NOT bit-flip (|0⟩ ↔ |1⟩)">X</div>
+            <div class="gate-token gate-y" data-gate="Y" title="Pauli-Y: Bit and phase flip with complex factor">Y</div>
+            <div class="gate-token gate-z" data-gate="Z" title="Pauli-Z: Phase flip (|1⟩ → -|1⟩)">Z</div>
+            <div class="gate-token gate-s" data-gate="S" title="Phase Gate S: 90° Z rotation (√Z)">S</div>
+            <div class="gate-token gate-t" data-gate="T" title="Phase Gate T: 45° Z rotation (∜Z)">T</div>
+            <div class="gate-token gate-cx" data-gate="CX" title="CNOT: Controlled-NOT (select control wire then target wire)">CX</div>
+            <div class="gate-token gate-cz" data-gate="CZ" title="CZ: Controlled-Z Phase Gate">CZ</div>
+            <div class="gate-token gate-m" data-gate="M" title="Measurement: Collapses qubit to classical bit">M</div>
+            <div class="gate-token gate-reset" data-gate="RESET" title="Reset: Returns qubit to |0⟩ state">|0⟩</div>
+
+            <span style="font-size:0.75rem; color:var(--text-dim); margin-left:auto;">
+              💡 <em>Click a gate to select, then click any wire slot to place. Click placed gate to remove.</em>
+            </span>
+          </div>
+
+          <!-- Visual Circuit Wire Grid Canvas -->
+          <div class="circuit-canvas-card">
+            <div class="circuit-grid" id="circuit-wire-grid">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Visualizations Grid (Probabilities Chart + 3D Bloch Sphere) -->
+          <div class="studio-vis-grid">
+            
+            <!-- Measurement Probabilities Chart Card -->
+            <div class="vis-card">
+              <div class="vis-card-header">
+                <h3 class="vis-card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                  Measurement Probabilities (Qiskit Aer)
+                </h3>
+                <span class="roadmap-step-status" id="sim-shots-badge">1024 Shots</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="probabilities-chart-canvas"></canvas>
+              </div>
+            </div>
+
+            <!-- Interactive 3D Bloch Sphere Card -->
+            <div class="vis-card">
+              <div class="vis-card-header">
+                <h3 class="vis-card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                  3D Bloch Sphere State Inspector
+                </h3>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="toolbar-label">Qubit:</span>
+                  <select class="select-quantum" id="bloch-qubit-select" style="padding:4px 8px;">
+                    <option value="0">Q0</option>
+                    <option value="1">Q1</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="bloch-container" id="bloch-three-canvas-container">
+                <div class="bloch-telemetry-badge" id="bloch-telemetry-text">
+                  |ψ⟩ = [x: 0.00, y: 0.00, z: 1.00] (r: 1.00)
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Statevector & Dirac Equation Inspector -->
+          <div class="state-inspector-card">
+            <div class="vis-card-header">
+              <h3 class="vis-card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                Quantum Statevector (Dirac Notation)
+              </h3>
+              <button class="btn-secondary" id="explain-result-ai-btn" style="padding:4px 12px; font-size:0.75rem;">
+                💡 Ask AI Tutor to Explain Result
+              </button>
+            </div>
+
+            <div class="dirac-equation-box" id="state-dirac-display">
+              |ψ⟩ = |00⟩
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="state-table">
+                <thead>
+                  <tr>
+                    <th>Basis State |k⟩</th>
+                    <th>Real (α)</th>
+                    <th>Imag (β)</th>
+                    <th>Magnitude |c|</th>
+                    <th>Phase (radians)</th>
+                    <th>Probability |c|²</th>
+                  </tr>
+                </thead>
+                <tbody id="statevector-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 4: QUANTUM CODING LAB
+           ================================================================= -->
+      <section class="view-section" id="view-codelab">
+        <div class="codelab-layout">
+          
+          <!-- Code Editor Pane -->
+          <div class="code-editor-card">
+            <div class="code-editor-header">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                <span style="font-family:var(--font-mono); font-size:0.85rem; font-weight:700; color:#fff;">circuit_experiment.py</span>
+                <span class="brand-badge" style="background:rgba(37, 99, 235, 0.2); color:#93c5fd; border-color:rgba(37, 99, 235, 0.4);">Qiskit 2.5</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button class="btn-secondary" id="sync-from-builder-btn" title="Sync from Visual Circuit Studio" style="padding:4px 12px; font-size:0.75rem;">
+                  ↻ Sync from Studio
+                </button>
+                <button class="btn-primary" id="run-qiskit-code-btn" style="padding:6px 16px; font-size:0.8rem;">
+                  ▶ Run Code
+                </button>
+              </div>
+            </div>
+
+            <textarea class="code-editor-area" id="python-code-editor" spellcheck="false"></textarea>
+          </div>
+
+          <!-- Code Output Terminal Pane -->
+          <div class="code-output-card">
+            <div class="terminal-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              <span>Aer Simulator Execution Terminal</span>
+              <span style="margin-left:auto; font-size:0.7rem; color:var(--text-dim);" id="terminal-status-text">Ready</span>
+            </div>
+            <pre class="terminal-stdout" id="terminal-stdout-pre">Click 'Run Code' to execute circuit via Qiskit Aer backend.</pre>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 5: CHALLENGES & QUIZZES
+           ================================================================= -->
+      <section class="view-section" id="view-challenges">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            Interactive Quantum Challenges
+          </h2>
+          <span class="roadmap-step-status">Solve circuits to earn Mastery XP</span>
+        </div>
+
+        <div class="challenges-grid" id="challenges-grid-container">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Active Challenge Workspace Banner -->
+        <div class="roadmap-container" id="challenge-workspace-banner" style="display:none; border-color:var(--color-accent);">
+          <div class="section-header">
+            <h2 class="section-title" id="active-challenge-title">Active Challenge: Bell State</h2>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="btn-secondary" id="challenge-hint-btn">💡 Ask AI for Hint</button>
+              <button class="btn-primary" id="challenge-submit-btn">✓ Submit Solution</button>
+            </div>
+          </div>
+          <p id="active-challenge-objective" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px;"></p>
+          <div id="challenge-feedback-box" style="display:none; padding:12px 16px; border-radius:var(--radius-md); font-size:0.85rem; line-height:1.5;"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 6: PROGRESS TRACKER
+           ================================================================= -->
+      <section class="view-section" id="view-progress">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            Your Quantum Learning Progress & Mastery
+          </h2>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon emerald">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="progress-percentage-val">65%</span>
+              <span class="stat-label">Overall Completion</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon amber">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="progress-xp-val">450 XP</span>
+              <span class="stat-label">Quantum Mastery Score</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 10"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">Apprentice</span>
+              <span class="stat-label">Learner Rank</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic Mastery Status Table -->
+        <div class="roadmap-container">
+          <div class="section-header">
+            <h3 class="section-title" style="font-size:1.1rem;">Topic Mastery Status</h3>
+          </div>
+          <table class="state-table">
+            <thead>
+              <tr>
+                <th>Topic</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Quiz Score</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="progress-topics-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Achievement Badges -->
+        <div class="section-header" style="margin-top:24px;">
+          <h3 class="section-title" style="font-size:1.1rem;">Quantum Badges</h3>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon cyan">🌟</div>
+            <div class="stat-info">
+              <span class="stat-value" style="font-size:1rem;">Superposition Pioneer</span>
+              <span class="stat-label">Created equal 50/50 state</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">🌌</div>
+            <div class="stat-info">
+              <span class="stat-value" style="font-size:1rem;">Entanglement Master</span>
+              <span class="stat-label">Synthesized Bell State |Φ+⟩</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon emerald">⚡</div>
+            <div class="stat-info">
+              <span class="stat-value" style="font-size:1rem;">Circuit Optimizer</span>
+              <span class="stat-label">Eliminated gate redundancies</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- =================================================================
+         AI QUANTUM TUTOR DRAWER (DOCKABLE & SLIDE-OVER)
+         ================================================================= -->
+    <div class="ai-tutor-overlay" id="ai-tutor-overlay"></div>
+    
+    <aside class="ai-tutor-drawer" id="ai-tutor-drawer">
+      <div class="tutor-drawer-header">
+        <div class="tutor-header-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><rect x="4" y="8" width="16" height="12" rx="2"></rect><circle cx="9" cy="13" r="1"></circle><circle cx="15" cy="13" r="1"></circle><path d="M9 17h6"></path></svg>
+          LeQC AI Tutor
+        </div>
+        <button class="btn-icon" id="close-ai-tutor-btn" style="width:28px; height:28px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Live Context Bar -->
+      <div class="tutor-context-bar">
+        <span id="tutor-active-topic-badge">Topic: Entanglement & Bell States</span>
+        <span id="tutor-active-circuit-badge">2 Qubits (2 Gates)</span>
+      </div>
+
+      <!-- Quick Action Chips -->
+      <div class="tutor-quick-chips">
+        <button class="quick-chip" data-mode="explain">💡 Explain Circuit</button>
+        <button class="quick-chip" data-mode="debug">🐞 Debug</button>
+        <button class="quick-chip" data-mode="generate">✨ Generate</button>
+        <button class="quick-chip" data-mode="optimize">⚡ Optimize</button>
+        <button class="quick-chip" data-mode="hint">🎯 Hint</button>
+      </div>
+
+      <!-- Chat Feed -->
+      <div class="tutor-messages-feed" id="tutor-messages-feed">
+        <!-- Initial Welcome Message -->
+        <div class="chat-bubble ai">
+          <h3>👋 Greetings, Quantum Explorer!</h3>
+          <p>
+            I am your context-aware Quantum AI Tutor. I watch your circuit in real-time and analyze
+            its statevector, Bloch coordinates, and measurement probabilities.
+          </p>
+          <ul style="margin-top:8px;">
+            <li>Click <strong>Explain Circuit</strong> to see the physical step-by-step breakdown.</li>
+            <li>Click <strong>Debug</strong> to identify mistakes or unmeasured wires.</li>
+            <li>Ask me to <strong>Generate</strong> any quantum circuit (e.g. <em>"Create a Bell state"</em> or <em>"Build Grover search"</em>).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Chat Input Bar -->
+      <div class="tutor-input-bar">
+        <input type="text" class="tutor-input" id="tutor-user-input" placeholder="Ask a quantum question or command..." autocomplete="off">
+        <button class="btn-send" id="tutor-send-btn" title="Send Question">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- =================================================================
+         SETTINGS MODAL (GEMINI API KEY & CONFIG)
+         ================================================================= -->
+    <div class="modal-overlay" id="settings-modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Settings & Configuration</h3>
+          <button class="btn-icon" id="close-settings-modal-btn" style="width:28px; height:28px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="settings-gemini-key">Google Gemini API Key (Optional)</label>
+            <input type="password" class="form-input" id="settings-gemini-key" placeholder="AIzaSy...">
+            <span style="font-size:0.75rem; color:var(--text-dim);">
+              If provided, AI Tutor activates Gemini 2.5 Flash. Otherwise, our built-in offline Quantum Pedagogical Core answers with zero setup required.
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="settings-shots-select">Qiskit Aer Simulator Shots</label>
+            <select class="select-quantum" id="settings-shots-select" style="width:100%;">
+              <option value="512">512 Shots</option>
+              <option value="1024" selected>1024 Shots (Recommended)</option>
+              <option value="4096">4096 Shots (High Precision)</option>
+              <option value="8192">8192 Shots</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="cancel-settings-btn">Cancel</button>
+          <button class="btn-primary" id="save-settings-btn">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================
+         AUTH MODAL (LOGIN & REGISTRATION)
+         ================================================================= -->
+    <div class="modal-overlay" id="auth-modal-overlay">
+      <div class="modal-card" style="max-width: 440px;">
+        <div class="modal-header">
+          <h3 class="modal-title" id="auth-modal-title">Learner Authentication</h3>
+          <button class="btn-icon" id="close-auth-modal-btn" style="width:28px; height:28px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Auth Mode Tabs -->
+          <div class="auth-tabs">
+            <button class="auth-tab-btn active" id="tab-btn-login">Sign In</button>
+            <button class="auth-tab-btn" id="tab-btn-register">Register Account</button>
+          </div>
+
+          <!-- Error Alert Notification -->
+          <div class="auth-error-alert" id="auth-error-alert" style="display:none;"></div>
+
+          <!-- Login Form -->
+          <form id="auth-login-form">
+            <div class="form-group">
+              <label class="form-label" for="login-identity">Email or Username</label>
+              <input type="text" class="form-input" id="login-identity" placeholder="learner@quantum.edu or alex" required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="login-password">Password</label>
+              <input type="password" class="form-input" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-primary" id="btn-submit-login" style="width:100%; justify-content:center; margin-top:8px;">
+              Sign In to LeQC
+            </button>
+            <p style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-top:16px;">
+              Don't have an account? <a href="#" id="link-to-register" style="color:var(--color-accent); font-weight:600; text-decoration:none;">Create account</a>
+            </p>
+          </form>
+
+          <!-- Register Form -->
+          <form id="auth-register-form" style="display:none;">
+            <div class="form-group">
+              <label class="form-label" for="register-fullname">Full Name</label>
+              <input type="text" class="form-input" id="register-fullname" placeholder="e.g. Richard Feynman" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="register-identity">Email or Username</label>
+              <input type="text" class="form-input" id="register-identity" placeholder="e.g. feynman@quantum.edu" required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="register-password">Password</label>
+              <input type="password" class="form-input" id="register-password" placeholder="Minimum 6 characters" required autocomplete="new-password">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="register-confirm-password">Confirm Password</label>
+              <input type="password" class="form-input" id="register-confirm-password" placeholder="Repeat your password" required autocomplete="new-password">
+            </div>
+            <button type="submit" class="btn-primary" id="btn-submit-register" style="width:100%; justify-content:center; margin-top:8px;">
+              Register & Initialize Progress
+            </button>
+            <p style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-top:16px;">
+              Already registered? <a href="#" id="link-to-login" style="color:var(--color-accent); font-weight:600; text-decoration:none;">Sign in</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================
+         SAVED CIRCUITS MODAL (LIST, LOAD, DELETE)
+         ================================================================= -->
+    <div class="modal-overlay" id="saved-circuits-modal-overlay">
+      <div class="modal-card" style="max-width: 580px;">
+        <div class="modal-header">
+          <h3 class="modal-title">My Saved Quantum Circuits</h3>
+          <button class="btn-icon" id="close-saved-circuits-modal-btn" style="width:28px; height:28px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="saved-circuits-list" id="saved-circuits-list">
+            <div class="empty-state-box">Loading your saved circuits...</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="close-saved-circuits-footer-btn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================
+         SAVE CURRENT CIRCUIT DIALOG
+         ================================================================= -->
+    <div class="modal-overlay" id="save-circuit-dialog-overlay">
+      <div class="modal-card" style="max-width: 440px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Save Circuit to Account</h3>
+          <button class="btn-icon" id="close-save-circuit-dialog-btn" style="width:28px; height:28px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="auth-error-alert" id="save-circuit-error-alert" style="display:none;"></div>
+          <div class="form-group">
+            <label class="form-label" for="save-circuit-name-input">Circuit Name</label>
+            <input type="text" class="form-input" id="save-circuit-name-input" placeholder="e.g. Bell State Entangled Pair" maxlength="60" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="save-circuit-desc-input">Description / Notes (Optional)</label>
+            <input type="text" class="form-input" id="save-circuit-desc-input" placeholder="e.g. Prepared with Hadamard + CNOT" maxlength="140">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="cancel-save-circuit-dialog-btn">Cancel</button>
+          <button class="btn-primary" id="confirm-save-circuit-btn">💾 Save Circuit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================
+         LEVEL MISSIONS & CHALLENGE WORKSPACE MODAL
+         ================================================================= -->
+    <div class="modal-overlay" id="level-mission-modal-overlay">
+      <div class="modal-card">
+        <div class="level-modal-header">
+          <div class="level-header-left">
+            <div class="level-header-orb" id="level-modal-orb">🟠</div>
+            <div class="level-header-titles">
+              <h2 id="level-modal-title">Level 3 — Superposition</h2>
+              <p id="level-modal-subtitle">Hadamard Gates, Probability Amplitudes &amp; Statevectors</p>
+            </div>
+          </div>
+          <div class="level-header-badges">
+            <span class="level-header-xp" id="level-modal-xp-badge">+50 XP</span>
+            <button class="btn-icon" id="close-level-modal-btn" style="width:28px; height:28px; background:rgba(255,255,255,0.2); color:#fff; border-color:transparent;" title="Close Level Workspace">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="level-modal-body" id="level-modal-body">
+          <!-- Dynamically populated by JS: Progress Meter, Missions List, Challenge Box, Celebration -->
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================
+         STUDENT DETAIL MODAL (Teacher view — individual student progress)
+         ================================================================= -->
+    <div class="modal-overlay" id="student-detail-modal-overlay">
+      <div class="modal-card" style="max-width:680px; max-height:90vh; overflow-y:auto;">
+        <div class="modal-header" style="position:sticky; top:0; z-index:10;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div id="student-detail-avatar" class="teacher-avatar" style="font-size:1rem; width:40px; height:40px;">AS</div>
+            <div>
+              <h3 class="modal-title" id="student-detail-name">Aarav Sharma</h3>
+              <div id="student-detail-meta" style="font-size:0.8rem; color:rgba(255,255,255,0.7);">Progress: 28% &bull; Quiz avg: 68% &bull; Last active: Today</div>
+            </div>
+          </div>
+          <button class="btn-icon" id="close-student-detail-btn" style="width:28px; height:28px; background:rgba(255,255,255,0.2); color:#fff; border-color:transparent;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body" id="student-detail-body">
+          <!-- Dynamically rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+  </div>
+
+  <!-- Main JavaScript Application -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
