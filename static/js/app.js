@@ -213,11 +213,11 @@
         datasets: [{
           label: 'Measurement Probability',
           data: [0.5, 0.5],
-          backgroundColor: '#2563eb',
-          borderColor: '#1d4ed8',
+          backgroundColor: '#EC4899',
+          borderColor: '#DB2777',
           borderWidth: 1.5,
           borderRadius: 6,
-          hoverBackgroundColor: '#f97316'
+          hoverBackgroundColor: '#F472B6'
         }]
       },
       options: {
@@ -227,10 +227,10 @@
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#1f2937',
-            titleColor: '#f97316',
+            backgroundColor: '#0F172A',
+            titleColor: '#EC4899',
             bodyColor: '#ffffff',
-            borderColor: '#374151',
+            borderColor: 'rgba(236, 72, 153, 0.4)',
             borderWidth: 1,
             callbacks: {
               label: function (context) {
@@ -246,14 +246,14 @@
             beginAtZero: true,
             max: 1.0,
             ticks: {
-              color: '#4b5563',
+              color: '#94a3b8',
               callback: value => `${(value * 100).toFixed(0)}%`
             },
-            grid: { color: '#e5e7eb' }
+            grid: { color: 'rgba(255, 255, 255, 0.08)' }
           },
           x: {
             ticks: {
-              color: '#111827',
+              color: '#f1f5f9',
               font: { family: 'JetBrains Mono', weight: 'bold', size: 12 }
             },
             grid: { display: false }
@@ -325,33 +325,33 @@
     const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
     blochScene.add(sphereMesh);
 
-    // Equator Ring (X-Y plane) - Electric Blue
+    // Equator Ring (X-Y plane) - Hot Pink
     const ringGeo = new THREE.RingGeometry(0.99, 1.01, 64);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x2563eb, side: THREE.DoubleSide });
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xF472B6, side: THREE.DoubleSide });
     const equator = new THREE.Mesh(ringGeo, ringMat);
     equator.rotation.x = Math.PI / 2;
     blochScene.add(equator);
 
-    // Principal Axes: X (Amber Orange), Y (Emerald), Z (Electric Blue)
+    // Principal Axes: X (Cyber Cyan), Y (Emerald), Z (Hot Pink)
     const axesLength = 1.35;
     
-    // Z axis (Vertical: Three.js Y) - Electric Blue
-    createAxisLine(new THREE.Vector3(0, -axesLength, 0), new THREE.Vector3(0, axesLength, 0), 0x2563eb);
-    // X axis (Three.js X) - Amber Orange
-    createAxisLine(new THREE.Vector3(-axesLength, 0, 0), new THREE.Vector3(axesLength, 0, 0), 0xf97316);
+    // Z axis (Vertical: Three.js Y) - Hot Pink
+    createAxisLine(new THREE.Vector3(0, -axesLength, 0), new THREE.Vector3(0, axesLength, 0), 0xEC4899);
+    // X axis (Three.js X) - Cyber Cyan
+    createAxisLine(new THREE.Vector3(-axesLength, 0, 0), new THREE.Vector3(axesLength, 0, 0), 0x38BDF8);
     // Y axis (Three.js Z) - Emerald
     createAxisLine(new THREE.Vector3(0, 0, -axesLength), new THREE.Vector3(0, 0, axesLength), 0x10b981);
 
-    // State Vector Arrow - Electric Blue
+    // State Vector Arrow - Hot Pink
     const dir = new THREE.Vector3(0, 1, 0);
     const origin = new THREE.Vector3(0, 0, 0);
-    blochArrow = new THREE.ArrowHelper(dir, origin, 1.0, 0x2563eb, 0.16, 0.08);
+    blochArrow = new THREE.ArrowHelper(dir, origin, 1.0, 0xEC4899, 0.16, 0.08);
     blochArrow.line.material.linewidth = 3;
     blochScene.add(blochArrow);
 
-    // Pulsing point for entangled state (radius ~ 0) - Amber Orange
+    // Pulsing point for entangled state (radius ~ 0) - Hot Pink
     const centerGeo = new THREE.SphereGeometry(0.08, 16, 16);
-    const centerMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
+    const centerMat = new THREE.MeshBasicMaterial({ color: 0xEC4899 });
     blochRadiusMesh = new THREE.Mesh(centerGeo, centerMat);
     blochRadiusMesh.visible = false;
     blochScene.add(blochRadiusMesh);
@@ -779,7 +779,7 @@
           <div style="font-weight:700; color:var(--purple-accent); margin-bottom:6px; font-size:0.9rem;">
             🔮 ${section.title}
           </div>
-          <p style="font-size:0.88rem; color:#e2e8f0; line-height:1.6;">${formatMarkdown(section.text)}</p>
+          <p style="font-size:0.88rem; color:var(--text-main); line-height:1.6;">${formatMarkdown(section.text)}</p>
         `;
       } else {
         el.innerHTML = `<p style="font-size:0.88rem; color:var(--text-muted);">${formatMarkdown(section.text)}</p>`;
@@ -1774,9 +1774,21 @@
       else section.classList.remove('active');
     });
 
+    // Toggle fullscreen learning journey view state on body
+    const isFullscreenJourney = (viewName === 'dashboard');
+    document.body.classList.toggle('fullscreen-journey-active', isFullscreenJourney);
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // View specific hooks
+    if (viewName === 'dashboard') {
+      setTimeout(() => {
+        if (typeof updateJourneySvgPaths === 'function') {
+          updateJourneySvgPaths();
+        }
+      }, 50);
+    }
+
     if (viewName === 'builder') {
       setTimeout(() => {
         if (blochRenderer && dom.blochThreeContainer) {
@@ -2062,7 +2074,8 @@
     try {
       const health = await fetch('/api/health').then(r => r.json());
       if (health.status === 'healthy') {
-        document.getElementById('engine-name-label').innerText = `${health.backend} (${health.qiskit_version})`;
+        const engineLbl = document.getElementById('engine-name-label');
+        if (engineLbl) engineLbl.innerText = `${health.backend} (${health.qiskit_version})`;
       }
     } catch (e) {
       console.warn('Backend server check note:', e);
@@ -2227,7 +2240,7 @@
 
       html += `
         <div class="journey-node-row ${rowPosClass}" id="journey-row-lvl-${level.id}">
-          <div class="journey-node-card ${level.status}" id="node-card-${level.id}" data-level-id="${level.id}" data-level-idx="${idx}">
+          <div class="journey-node-card ${level.status} ${isCurrent ? 'current' : ''}" id="node-card-${level.id}" data-level-id="${level.id}" data-level-idx="${idx}">
             
             <!-- Left Orb / Checkpoint Badge -->
             <div class="node-orb-container">
@@ -2319,6 +2332,7 @@
   function updateJourneySvgPaths() {
     const mapContainer = document.getElementById('quantum-world-map');
     const svgEl = document.getElementById('quantum-map-svg');
+    const pathBase = document.getElementById('svg-path-base');
     const pathCompleted = document.getElementById('svg-path-completed');
     const pathActive = document.getElementById('svg-path-active');
     const pathLocked = document.getElementById('svg-path-locked');
@@ -2349,7 +2363,7 @@
       });
     }
 
-    // 2. Level nodes
+    // 2. Level nodes (All 7 levels)
     levels.forEach(lvl => {
       const cardEl = document.getElementById(`node-card-${lvl.id}`);
       const orbEl = document.getElementById(`orb-${lvl.id}`);
@@ -2364,19 +2378,20 @@
       }
     });
 
-    // 3. Mastery node
+    // 3. Final module: Quantum Mastery Capstone node
     const masteryEl = document.getElementById('journey-node-mastery');
     if (masteryEl) {
       const rect = masteryEl.getBoundingClientRect();
       nodeSequence.push({
         status: 'locked',
         x: rect.left + rect.width / 2 - mapRect.left,
-        y: rect.top - mapRect.top + 8
+        y: rect.top + rect.height / 2 - mapRect.top
       });
     }
 
     if (nodeSequence.length < 2) return;
 
+    let dBase = '';
     let dCompleted = '';
     let dActive = '';
     let dLocked = '';
@@ -2391,10 +2406,13 @@
       const y2 = p2.y;
 
       const dy = y2 - y1;
-      const c1y = y1 + dy * 0.55;
-      const c2y = y2 - dy * 0.55;
+      const c1y = y1 + dy * 0.36;
+      const c2y = y2 - dy * 0.36;
 
       const segmentD = `M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${x1.toFixed(1)} ${c1y.toFixed(1)}, ${x2.toFixed(1)} ${c2y.toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)} `;
+
+      // Full continuous baseline track from first to final module
+      dBase += segmentD;
 
       // Determine segment state
       if (p2.status === 'completed') {
@@ -2406,6 +2424,7 @@
       }
     }
 
+    if (pathBase) pathBase.setAttribute('d', dBase);
     if (pathCompleted) pathCompleted.setAttribute('d', dCompleted);
     if (pathActive) pathActive.setAttribute('d', dActive);
     if (pathLocked) pathLocked.setAttribute('d', dLocked);
@@ -2741,6 +2760,8 @@
   const switchRoleBtn = document.getElementById('switch-role-btn');
   const switchRoleLbl = document.getElementById('switch-role-label');
 
+  let currentAuthRole = 'student';
+
   // Navigation Controller between screens
   function showLandingPage() {
     if (landingOverlay) {
@@ -2759,22 +2780,98 @@
     startLandingVisual();
   }
 
-  function showAuthPage(initialTab = 'login') {
-    // Stop 3D animation loop while in auth screen to save GPU/CPU
+  function showRoleSpecificAuth(role = 'student', initialTab = 'login') {
+    currentAuthRole = role;
     stopLandingVisual();
 
     if (landingOverlay) landingOverlay.style.display = 'none';
+    if (roleOverlay) roleOverlay.style.display = 'none';
     if (authOverlay) {
       authOverlay.style.display = 'flex';
       authOverlay.classList.remove('hidden');
     }
-    if (roleOverlay) roleOverlay.style.display = 'none';
 
     if (studentNav) studentNav.style.display = 'none';
     if (teacherNav) teacherNav.style.display = 'none';
     if (switchRoleBtn) switchRoleBtn.style.display = 'none';
 
+    const isTeacher = (role === 'teacher');
+    
+    // Portal Badge & Title
+    const portalBadge = document.getElementById('auth-portal-badge');
+    const portalIcon = document.getElementById('auth-portal-icon');
+    const portalText = document.getElementById('auth-portal-text');
+    if (portalBadge) {
+      portalBadge.className = `auth-role-pill ${isTeacher ? 'teacher' : 'student'}`;
+    }
+    if (portalIcon) portalIcon.textContent = isTeacher ? '👩‍🏫' : '👨‍🎓';
+    if (portalText) portalText.textContent = isTeacher ? 'Teacher / Educator Portal' : 'Student Portal';
+
+    // Headings, Subtitles, Demo credentials
+    const loginHeading = document.getElementById('auth-login-heading');
+    const loginSub = document.getElementById('auth-login-sub');
+    const demoHintText = document.getElementById('auth-demo-hint-text');
+    const loginEmailLabel = document.getElementById('auth-login-email-label');
+    const loginEmailInput = document.getElementById('auth-login-email');
+    const loginPwdInput = document.getElementById('auth-login-pwd');
+    const btnLoginText = document.getElementById('btn-screen-login-text');
+
+    const signupHeading = document.getElementById('auth-signup-heading');
+    const signupSub = document.getElementById('auth-signup-sub');
+    const signupEmailLabel = document.getElementById('auth-signup-email-label');
+    const signupEmailInput = document.getElementById('auth-signup-email');
+    const btnSignupText = document.getElementById('btn-screen-signup-text');
+
+    const switchPromptLabel = document.getElementById('auth-switch-prompt-label');
+    const btnSwitchAuthRole = document.getElementById('btn-switch-auth-role');
+
+    if (isTeacher) {
+      if (loginHeading) loginHeading.textContent = 'Teacher Sign In 👩‍🏫';
+      if (loginSub) loginSub.textContent = 'Sign in to access cohort analytics, student tracking & telemetry.';
+      if (demoHintText) demoHintText.textContent = '⚡ Demo Educator: Dr. Priya Patel (Lead Quantum Instructor)';
+      if (loginEmailLabel) loginEmailLabel.textContent = 'Teacher Email / Username';
+      if (loginEmailInput) {
+        loginEmailInput.placeholder = 'priya.patel@quantumclass.edu';
+        loginEmailInput.value = 'priya.patel@quantumclass.edu';
+      }
+      if (loginPwdInput) loginPwdInput.value = 'quantum2026';
+      if (btnLoginText) btnLoginText.textContent = 'SIGN IN AS TEACHER';
+
+      if (signupHeading) signupHeading.textContent = 'Create Teacher Account 📚';
+      if (signupSub) signupSub.textContent = 'Set up your classroom telemetry and student progress dashboard.';
+      if (signupEmailLabel) signupEmailLabel.textContent = 'Teacher Email';
+      if (signupEmailInput) signupEmailInput.placeholder = 'priya.patel@quantumclass.edu';
+      if (btnSignupText) btnSignupText.textContent = 'CREATE TEACHER ACCOUNT';
+
+      if (switchPromptLabel) switchPromptLabel.textContent = 'Are you a student learner?';
+      if (btnSwitchAuthRole) btnSwitchAuthRole.textContent = 'Switch to Student Portal →';
+    } else {
+      if (loginHeading) loginHeading.textContent = 'Student Sign In 👋';
+      if (loginSub) loginSub.textContent = 'Sign in to resume your interactive quantum learning journey.';
+      if (demoHintText) demoHintText.textContent = '⚡ Demo Learner: Aarav Sharma (Level 3: Superposition)';
+      if (loginEmailLabel) loginEmailLabel.textContent = 'Student Email / Username';
+      if (loginEmailInput) {
+        loginEmailInput.placeholder = 'aarav@quantumclass.edu';
+        loginEmailInput.value = 'aarav@quantumclass.edu';
+      }
+      if (loginPwdInput) loginPwdInput.value = 'quantum2026';
+      if (btnLoginText) btnLoginText.textContent = 'SIGN IN AS STUDENT';
+
+      if (signupHeading) signupHeading.textContent = 'Create Student Account 🚀';
+      if (signupSub) signupSub.textContent = 'Start your interactive journey into quantum computing.';
+      if (signupEmailLabel) signupEmailLabel.textContent = 'Student Email';
+      if (signupEmailInput) signupEmailInput.placeholder = 'aarav@quantumclass.edu';
+      if (btnSignupText) btnSignupText.textContent = 'CREATE STUDENT ACCOUNT';
+
+      if (switchPromptLabel) switchPromptLabel.textContent = 'Are you a teacher?';
+      if (btnSwitchAuthRole) btnSwitchAuthRole.textContent = 'Switch to Teacher Portal →';
+    }
+
     switchAuthTab(initialTab);
+  }
+
+  function showAuthPage(initialTab = 'login') {
+    showRoleSpecificAuth(currentAuthRole || 'student', initialTab);
   }
 
   function showRoleOverlay() {
@@ -2851,6 +2948,12 @@
     switchView('dashboard');
   }
 
+  // Teacher Dashboard Filter & Sort State
+  let teacherTableSearchQuery = '';
+  let teacherTableStatusFilter = 'all';
+  let teacherTableSortOrder = 'progress-desc';
+  let teacherProgressChartInstance = null;
+
   function enterTeacherRole() {
     if (!window.QUBITLAB_DEMO) { console.error('Demo data not loaded'); return; }
     window._qubitlab_role = 'teacher';
@@ -2869,60 +2972,457 @@
       if (switchRoleLbl) switchRoleLbl.textContent = 'Switch Role';
     }
 
-    // Render student roster table
+    // Render roster table & metrics
     renderStudentRosterTable();
+    updateTeacherKPIs();
 
     // Show teacher dashboard
     switchTeacherView('teacher-dashboard');
+
+    // Setup teacher interactive event listeners if not yet done
+    setupTeacherDashboardListeners();
+
+    // Initialize or refresh charts
+    setTimeout(() => {
+      initTeacherCharts();
+    }, 150);
+  }
+
+  function updateTeacherKPIs() {
+    if (!window.QUBITLAB_DEMO) return;
+    const roster = window.QUBITLAB_DEMO.CLASS_ROSTER || [];
+    const totalCount = 24; // Master class count
+    const activeCount = roster.filter(s => s.status === 'Active').length;
+    const avgProgress = Math.round(roster.reduce((sum, s) => sum + (s.progress || 0), 0) / (roster.length || 1));
+    const avgQuiz = Math.round(roster.reduce((sum, s) => sum + (s.quizAverage || 0), 0) / (roster.length || 1));
+    const totalChallenges = roster.reduce((sum, s) => sum + (s.challengesDone || 0), 0) + 21; // including rest of class
+
+    const elTotal = document.getElementById('t-metric-total');
+    if (elTotal) elTotal.textContent = totalCount;
+
+    const elActive = document.getElementById('t-metric-active');
+    if (elActive) elActive.textContent = '18';
+
+    const elProgress = document.getElementById('t-metric-progress');
+    if (elProgress) elProgress.textContent = `${avgProgress}%`;
+
+    const elProgressBar = document.getElementById('t-metric-progress-bar');
+    if (elProgressBar) elProgressBar.style.width = `${avgProgress}%`;
+
+    const elQuiz = document.getElementById('t-metric-quiz');
+    if (elQuiz) elQuiz.textContent = `${avgQuiz}%`;
+
+    const elChallenges = document.getElementById('t-metric-challenges');
+    if (elChallenges) elChallenges.textContent = totalChallenges;
   }
 
   function switchTeacherView(viewName) {
     if (!viewName) return;
+
+    // Map teacher views to sections in the unified Lytic dashboard
+    const sectionMap = {
+      'teacher-dashboard': 'teacher-section-overview',
+      'teacher-students': 'teacher-section-students',
+      'teacher-analytics': 'teacher-section-progress',
+      'teacher-insights': 'teacher-section-insights'
+    };
+
+    // Keep view-teacher-dashboard active
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-    const target = document.getElementById('view-' + viewName);
+    const target = document.getElementById('view-teacher-dashboard');
     if (target) target.classList.add('active');
 
-    // Update teacher nav active state
+    // Update top teacher nav active state
     document.querySelectorAll('#teacher-nav .nav-tab-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.teacherView === viewName);
     });
+
+    // Update left sidebar link active state
+    const cleanSectionName = viewName.replace('teacher-', '');
+    document.querySelectorAll('.t-sidebar-link').forEach(link => {
+      const targetSec = link.dataset.tSection || '';
+      link.classList.toggle('active', targetSec.includes(cleanSectionName) || (cleanSectionName === 'dashboard' && targetSec.includes('overview')));
+    });
+
+    // Smooth scroll to the target section if not dashboard overview
+    const targetSectionId = sectionMap[viewName];
+    if (targetSectionId && targetSectionId !== 'teacher-section-overview') {
+      const el = document.getElementById(targetSectionId);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+      }
+    }
+
+    // Refresh charts and table on view change
+    setTimeout(() => {
+      initTeacherCharts();
+    }, 100);
   }
 
   function renderStudentRosterTable() {
     const tbody = document.getElementById('student-roster-tbody');
     if (!tbody || !window.QUBITLAB_DEMO) return;
-    const roster = window.QUBITLAB_DEMO.CLASS_ROSTER;
+    let roster = [...window.QUBITLAB_DEMO.CLASS_ROSTER];
+
+    // 1. Filter by status
+    if (teacherTableStatusFilter === 'active') {
+      roster = roster.filter(s => s.status === 'Active');
+    } else if (teacherTableStatusFilter === 'attention') {
+      roster = roster.filter(s => s.status === 'Needs Attention');
+    }
+
+    // 2. Filter by search query
+    if (teacherTableSearchQuery.trim()) {
+      const q = teacherTableSearchQuery.toLowerCase();
+      roster = roster.filter(s =>
+        s.name.toLowerCase().includes(q) ||
+        (s.currentLevel && s.currentLevel.toLowerCase().includes(q)) ||
+        (s.email && s.email.toLowerCase().includes(q)) ||
+        (s.id === 1 && 'aarav@quantumclass.edu'.includes(q))
+      );
+    }
+
+    // 3. Sort
+    if (teacherTableSortOrder === 'progress-desc') {
+      roster.sort((a, b) => b.progress - a.progress);
+    } else if (teacherTableSortOrder === 'progress-asc') {
+      roster.sort((a, b) => a.progress - b.progress);
+    } else if (teacherTableSortOrder === 'quiz-desc') {
+      roster.sort((a, b) => b.quizAverage - a.quizAverage);
+    } else if (teacherTableSortOrder === 'name-asc') {
+      roster.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    // Update count indicator
+    const countEl = document.getElementById('t-table-count-label');
+    if (countEl) {
+      countEl.textContent = `Showing ${roster.length} of ${window.QUBITLAB_DEMO.CLASS_ROSTER.length} enrolled learners in Quantum Computing 101`;
+    }
+
+    if (roster.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:36px; color:var(--text-muted); font-size:0.9rem;">
+        No learners match your search criteria. <button type="button" class="btn-view-student" style="margin-left:8px;" onclick="window.resetTeacherTableFilters()">Reset Filters</button>
+      </td></tr>`;
+      return;
+    }
 
     tbody.innerHTML = roster.map(s => {
-      const progColor = s.progress >= 60 ? 'var(--color-accent)' : s.progress >= 35 ? 'var(--color-secondary)' : '#ef4444';
+      const progColor = s.progress >= 60 ? 'var(--emerald-success)' : s.progress >= 35 ? 'var(--color-secondary)' : '#ef4444';
       const isAttention = s.status === 'Needs Attention';
+      const email = s.id === 1 ? 'aarav@quantumclass.edu' : `${s.name.toLowerCase().replace(/\s+/g, '.')}@quantumclass.edu`;
+
       return `<tr>
         <td>
           <div class="student-name-cell">
-            <div class="student-table-avatar" style="background:${isAttention ? '#ef4444' : 'var(--color-primary)'};">${s.avatar}</div>
-            <span style="font-weight:600;">${s.name}</span>
+            <div class="student-table-avatar" style="background:${isAttention ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-secondary-hover) 100%)'};">${s.avatar}</div>
+            <div>
+              <div class="student-table-fullname">
+                ${s.name} ${s.id === 1 ? '<span class="t-self-badge">Demo Learner</span>' : ''}
+              </div>
+              <div class="student-table-email">${email}</div>
+            </div>
           </div>
         </td>
         <td>
           <div class="table-progress-bar">
             <div class="table-prog-track"><div class="table-prog-fill" style="width:${s.progress}%; background:${progColor};"></div></div>
-            <span style="font-size:0.82rem; font-weight:700; color:${progColor};">${s.progress}%</span>
+            <span style="font-size:0.84rem; font-weight:700; font-family:var(--font-mono); color:${progColor};">${s.progress}%</span>
           </div>
         </td>
-        <td style="font-weight:600; color:${s.quizAverage >= 70 ? 'var(--color-accent)' : '#ef4444'};">${s.quizAverage}%</td>
-        <td>${s.currentLevel || 'Superposition'}</td>
-        <td>${s.challengesDone || 1} / 5</td>
-        <td style="color:var(--text-muted); font-size:0.82rem;">${s.lastActive}</td>
+        <td>
+          <span class="level-badge">${s.currentLevel || 'Superposition'}</span>
+        </td>
+        <td>
+          <span class="quiz-score-badge ${s.quizAverage >= 75 ? 'high' : s.quizAverage >= 65 ? 'med' : 'low'}">
+            ${s.quizAverage}%
+          </span>
+        </td>
+        <td>
+          <span class="challenge-count-badge">${s.challengesDone || 0} / 5</span>
+        </td>
+        <td style="color:var(--text-muted); font-size:0.82rem; white-space:nowrap;">
+          ${s.lastActive}
+        </td>
         <td>
           <span class="status-badge ${isAttention ? 'attention' : 'active'}">
             ${isAttention ? '⚠ Needs Attention' : '● Active'}
           </span>
         </td>
         <td>
-          <button class="btn-view-student" onclick="window.teacherViewStudent(${s.id})">View Journey →</button>
+          <button type="button" class="btn-view-student" onclick="window.teacherViewStudent(${s.id})">
+            View Journey &rarr;
+          </button>
         </td>
       </tr>`;
     }).join('');
+  }
+
+  window.resetTeacherTableFilters = function() {
+    teacherTableSearchQuery = '';
+    teacherTableStatusFilter = 'all';
+    teacherTableSortOrder = 'progress-desc';
+
+    const searchInput = document.getElementById('teacher-table-search');
+    if (searchInput) searchInput.value = '';
+
+    const sortSelect = document.getElementById('teacher-table-sort');
+    if (sortSelect) sortSelect.value = 'progress-desc';
+
+    document.querySelectorAll('#t-table-status-filters .t-filter-pill-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.status === 'all');
+    });
+
+    renderStudentRosterTable();
+  };
+
+  function initTeacherCharts() {
+    const canvas = document.getElementById('teacher-progress-chart');
+    if (!canvas || !window.Chart) return;
+
+    if (teacherProgressChartInstance) {
+      teacherProgressChartInstance.destroy();
+      teacherProgressChartInstance = null;
+    }
+
+    const ctx = canvas.getContext('2d');
+    const grad = ctx.createLinearGradient(0, 0, 0, 240);
+    grad.addColorStop(0, 'rgba(236, 72, 153, 0.35)');
+    grad.addColorStop(1, 'rgba(236, 72, 153, 0.0)');
+
+    teacherProgressChartInstance = new window.Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['L1: Basics', 'L2: Qubits', 'L3: Superposition', 'L4: Gates', 'L5: Entanglement', 'L6: Bell States', 'L7: Grover'],
+        datasets: [
+          {
+            label: 'Class Completion %',
+            data: [92, 84, 78, 55, 40, 28, 10],
+            borderColor: '#EC4899',
+            borderWidth: 3,
+            backgroundColor: grad,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#EC4899',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 8
+          },
+          {
+            label: 'Quiz Mastery %',
+            data: [76, 74, 70, 72, 65, 62, 58],
+            borderColor: '#38bdf8',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            backgroundColor: 'transparent',
+            fill: false,
+            tension: 0.3,
+            pointBackgroundColor: '#38bdf8',
+            pointBorderColor: '#0F172A',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 7
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: '#0F172A',
+            borderColor: 'rgba(236, 72, 153, 0.4)',
+            borderWidth: 1,
+            titleColor: '#ffffff',
+            bodyColor: '#94a3b8',
+            titleFont: { family: 'Outfit', size: 13, weight: 'bold' },
+            bodyFont: { family: 'Inter', size: 12 },
+            padding: 10,
+            boxPadding: 4,
+            usePointStyle: true
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(255, 255, 255, 0.05)',
+              borderColor: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+              color: '#94a3b8',
+              font: { family: 'Inter', size: 11 }
+            }
+          },
+          y: {
+            min: 0,
+            max: 100,
+            grid: {
+              color: 'rgba(255, 255, 255, 0.05)',
+              borderColor: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+              color: '#94a3b8',
+              font: { family: 'Inter', size: 11 },
+              callback: (v) => v + '%'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  let teacherListenersConfigured = false;
+  function setupTeacherDashboardListeners() {
+    if (teacherListenersConfigured) return;
+    teacherListenersConfigured = true;
+
+    // Search Input
+    const searchInput = document.getElementById('teacher-table-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        teacherTableSearchQuery = e.target.value;
+        renderStudentRosterTable();
+      });
+    }
+
+    // Status Filter Pills
+    document.querySelectorAll('#t-table-status-filters .t-filter-pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#t-table-status-filters .t-filter-pill-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        teacherTableStatusFilter = btn.dataset.status || 'all';
+        renderStudentRosterTable();
+      });
+    });
+
+    // Sort Select
+    const sortSelect = document.getElementById('teacher-table-sort');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', (e) => {
+        teacherTableSortOrder = e.target.value;
+        renderStudentRosterTable();
+      });
+    }
+
+    // Sidebar Navigation Links
+    document.querySelectorAll('#teacher-sidebar-nav .t-sidebar-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sectionId = link.dataset.tSection;
+        if (sectionId) {
+          const el = document.getElementById(sectionId);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        document.querySelectorAll('#teacher-sidebar-nav .t-sidebar-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      });
+    });
+
+    // Quick Filter Buttons in Sidebar
+    const qfAttention = document.getElementById('qf-attention-btn');
+    if (qfAttention) {
+      qfAttention.addEventListener('click', () => {
+        teacherTableStatusFilter = 'attention';
+        document.querySelectorAll('#t-table-status-filters .t-filter-pill-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.status === 'attention');
+        });
+        renderStudentRosterTable();
+        const el = document.getElementById('teacher-section-students');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    const qfActive = document.getElementById('qf-active-btn');
+    if (qfActive) {
+      qfActive.addEventListener('click', () => {
+        teacherTableStatusFilter = 'active';
+        document.querySelectorAll('#t-table-status-filters .t-filter-pill-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.status === 'active');
+        });
+        renderStudentRosterTable();
+        const el = document.getElementById('teacher-section-students');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    const qfStuck = document.getElementById('qf-stuck-btn');
+    if (qfStuck) {
+      qfStuck.addEventListener('click', () => {
+        const el = document.getElementById('teacher-section-quantum');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    // Sidebar Switch Role Button
+    const tSidebarSwitchBtn = document.getElementById('t-sidebar-switch-role-btn');
+    if (tSidebarSwitchBtn) {
+      tSidebarSwitchBtn.addEventListener('click', () => {
+        if (typeof enterStudentRole === 'function') {
+          enterStudentRole();
+        } else if (roleOverlay) {
+          roleOverlay.style.display = 'flex';
+          roleOverlay.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Timeframe Filter Buttons
+    document.querySelectorAll('#t-timeframe-group .t-pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#t-timeframe-group .t-pill-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (typeof showToast === 'function') {
+          showToast(`Filtered cohort telemetry: ${btn.textContent.trim()}`);
+        }
+      });
+    });
+
+    // Export CSV Button
+    const exportBtn = document.getElementById('t-export-csv-btn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        if (!window.QUBITLAB_DEMO) return;
+        const roster = window.QUBITLAB_DEMO.CLASS_ROSTER || [];
+        const csvHeader = "ID,Name,Email,Current Level,Progress (%),Quiz Average (%),Challenges Completed,Last Active,Status\n";
+        const csvRows = roster.map(s => {
+          const email = s.id === 1 ? 'aarav@quantumclass.edu' : `${s.name.toLowerCase().replace(/\s+/g, '.')}@quantumclass.edu`;
+          return `${s.id},"${s.name}","${email}","${s.currentLevel || 'Superposition'}",${s.progress},${s.quizAverage},${s.challengesDone || 0},"${s.lastActive}","${s.status}"`;
+        }).join("\n");
+
+        const blob = new Blob([csvHeader + csvRows], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `LeQC_Cohort_Telemetry_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        if (typeof showToast === 'function') {
+          showToast('Cohort telemetry CSV exported successfully!');
+        }
+      });
+    }
+
+    // Refresh Data Button
+    const refreshBtn = document.getElementById('t-refresh-data-btn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        renderStudentRosterTable();
+        updateTeacherKPIs();
+        initTeacherCharts();
+        if (typeof showToast === 'function') {
+          showToast('Telemetry refreshed from Qiskit Aer simulation engine');
+        }
+      });
+    }
   }
 
   // Teacher View: Displays student's ACTUAL Quantum Learning Journey
@@ -3047,6 +3547,8 @@
       // Re-render Teacher Roster table if in teacher mode
       if (window._qubitlab_role === 'teacher') {
         renderStudentRosterTable();
+        updateTeacherKPIs();
+        initTeacherCharts();
       }
     });
   }
@@ -3323,21 +3825,80 @@
       switchTeacherView(btn.dataset.teacherView);
     });
   });
+  setupTeacherDashboardListeners();
 
-  // Wire up Landing Page Buttons
+  // Wire up Landing Page Buttons -> Go to Teacher/Student Role Selection FIRST!
   const landingStartBtn = document.getElementById('landing-start-btn');
   if (landingStartBtn) {
-    landingStartBtn.addEventListener('click', () => showAuthPage('login'));
+    landingStartBtn.addEventListener('click', () => showRoleOverlay());
   }
 
   const landingDirectLoginBtn = document.getElementById('landing-direct-login-btn');
   if (landingDirectLoginBtn) {
-    landingDirectLoginBtn.addEventListener('click', () => showAuthPage('login'));
+    landingDirectLoginBtn.addEventListener('click', () => showRoleOverlay());
   }
 
   const landingNavAuthBtn = document.getElementById('landing-nav-auth-btn');
   if (landingNavAuthBtn) {
-    landingNavAuthBtn.addEventListener('click', () => showAuthPage('login'));
+    landingNavAuthBtn.addEventListener('click', () => showRoleOverlay());
+  }
+
+  // Wire up Landing Page Navigation Tabs (WHY LeQC, GETTING STARTED, COMMUNITY, QUANTUM ECOSYSTEM)
+  const landingOverlayEl = document.getElementById('landing-page-overlay');
+  const landingNavLinks = document.querySelectorAll('.landing-nav-link');
+
+  landingNavLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '');
+      if (!targetId) return;
+      const targetEl = document.getElementById(targetId);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        landingNavLinks.forEach(l => {
+          if (l.getAttribute('data-section') === targetId) {
+            l.classList.add('active');
+          } else {
+            l.classList.remove('active');
+          }
+        });
+      }
+    });
+  });
+
+  // Wire up CTA triggers in sections to open Role Selection
+  document.querySelectorAll('.landing-cta-trigger').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showRoleOverlay();
+    });
+  });
+
+  // Sync active landing tab on scroll
+  if (landingOverlayEl) {
+    const sectionIds = ['why-leqc', 'getting-started', 'community', 'quantum-ecosystem'];
+    landingOverlayEl.addEventListener('scroll', () => {
+      const scrollPos = landingOverlayEl.scrollTop + 220;
+      let currentSection = '';
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            currentSection = id;
+            break;
+          }
+        }
+      }
+      landingNavLinks.forEach(l => {
+        if (l.getAttribute('data-section') === currentSection) {
+          l.classList.add('active');
+        } else {
+          l.classList.remove('active');
+        }
+      });
+    }, { passive: true });
   }
 
   // Wire up Auth Page Tab Buttons & Links
@@ -3367,17 +3928,27 @@
     });
   }
 
-  const authBackToLandingBtn = document.getElementById('auth-back-to-landing-btn');
-  if (authBackToLandingBtn) {
-    authBackToLandingBtn.addEventListener('click', () => showLandingPage());
+  // Back from Auth Screen to Role Selection
+  const authBackToRolesBtn = document.getElementById('auth-back-to-landing-btn');
+  if (authBackToRolesBtn) {
+    authBackToRolesBtn.addEventListener('click', () => showRoleOverlay());
   }
 
-  const roleBackToAuthBtn = document.getElementById('role-back-to-auth-btn');
-  if (roleBackToAuthBtn) {
-    roleBackToAuthBtn.addEventListener('click', () => showAuthPage('login'));
+  // Back from Role Selection to Welcome Landing Page
+  const roleBackToLandingBtn = document.getElementById('role-back-to-landing-btn');
+  if (roleBackToLandingBtn) {
+    roleBackToLandingBtn.addEventListener('click', () => showLandingPage());
   }
 
-  // Handle Login Form Submit (Frontend Mock Auth)
+  // Quick switch role inside Auth Screen ("Switch to Teacher / Student Portal")
+  const btnSwitchAuthRole = document.getElementById('btn-switch-auth-role');
+  if (btnSwitchAuthRole) {
+    btnSwitchAuthRole.addEventListener('click', () => {
+      showRoleSpecificAuth(currentAuthRole === 'student' ? 'teacher' : 'student');
+    });
+  }
+
+  // Handle Login Form Submit -> Launch corresponding dashboard directly!
   const loginForm = document.getElementById('auth-screen-login-form');
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
@@ -3386,20 +3957,31 @@
       const emailVal = emailInput ? emailInput.value.trim() : 'learner';
       const alertBox = document.getElementById('auth-page-alert');
 
+      const isTeacher = (currentAuthRole === 'teacher');
+      const roleName = isTeacher ? 'Teacher' : 'Student';
+
       if (alertBox) {
         alertBox.className = 'auth-msg-alert success';
-        alertBox.textContent = `✓ Welcome back, ${emailVal}! Launching profile selection...`;
+        alertBox.textContent = `✓ Welcome back! Signing in to ${roleName} Dashboard...`;
         alertBox.style.display = 'block';
       }
 
-      showToast(`Logged in successfully as ${emailVal}!`, 'success');
+      showToast(`Signed in successfully as ${roleName}!`, 'success');
       setTimeout(() => {
-        showRoleOverlay();
-      }, 500);
+        if (authOverlay) {
+          authOverlay.classList.add('hidden');
+          setTimeout(() => { authOverlay.style.display = 'none'; }, 200);
+        }
+        if (isTeacher) {
+          enterTeacherRole();
+        } else {
+          enterStudentRole();
+        }
+      }, 400);
     });
   }
 
-  // Handle Sign Up Form Submit (Frontend Mock Auth)
+  // Handle Sign Up Form Submit -> Launch corresponding dashboard directly!
   const signupForm = document.getElementById('auth-screen-signup-form');
   if (signupForm) {
     signupForm.addEventListener('submit', (e) => {
@@ -3419,25 +4001,52 @@
       }
 
       const nameVal = nameInput ? nameInput.value.trim() : 'Learner';
+      const isTeacher = (currentAuthRole === 'teacher');
+      const roleName = isTeacher ? 'Teacher' : 'Student';
+
       if (alertBox) {
         alertBox.className = 'auth-msg-alert success';
-        alertBox.textContent = `✓ Account created! Welcome to LeQC, ${nameVal}!`;
+        alertBox.textContent = `✓ Account created! Welcome to LeQC, ${nameVal}! Launching ${roleName} Dashboard...`;
         alertBox.style.display = 'block';
       }
 
       showToast(`Account created for ${nameVal}!`, 'success');
       setTimeout(() => {
-        showRoleOverlay();
-      }, 600);
+        if (authOverlay) {
+          authOverlay.classList.add('hidden');
+          setTimeout(() => { authOverlay.style.display = 'none'; }, 200);
+        }
+        if (isTeacher) {
+          enterTeacherRole();
+        } else {
+          enterStudentRole();
+        }
+      }, 450);
     });
   }
 
-  // Wire up role selection buttons
+  // Wire up role selection buttons -> Lead to Role-Specific Login!
   const enterStudentBtn = document.getElementById('enter-student-btn');
-  if (enterStudentBtn) enterStudentBtn.addEventListener('click', enterStudentRole);
+  if (enterStudentBtn) {
+    enterStudentBtn.addEventListener('click', () => showRoleSpecificAuth('student'));
+  }
+  const studentRoleCard = document.getElementById('student-role-card');
+  if (studentRoleCard) {
+    studentRoleCard.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'BUTTON') showRoleSpecificAuth('student');
+    });
+  }
 
   const enterTeacherBtn = document.getElementById('enter-teacher-btn');
-  if (enterTeacherBtn) enterTeacherBtn.addEventListener('click', enterTeacherRole);
+  if (enterTeacherBtn) {
+    enterTeacherBtn.addEventListener('click', () => showRoleSpecificAuth('teacher'));
+  }
+  const teacherRoleCard = document.getElementById('teacher-role-card');
+  if (teacherRoleCard) {
+    teacherRoleCard.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'BUTTON') showRoleSpecificAuth('teacher');
+    });
+  }
 
   // Wire up switch role button in navbar
   if (switchRoleBtn) {
@@ -3467,22 +4076,44 @@
   // THEME CONTROLLER (LIGHT / DARK MODE)
   // =========================================================================
   function initTheme() {
-    const savedTheme = localStorage.getItem('leqc_theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const savedTheme = localStorage.getItem('leqc_theme') || 'dark';
     setTheme(savedTheme);
 
-    const toggleBtn = document.getElementById('theme-toggle-btn');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    // Bind all theme toggle buttons across Welcome page, Auth, Role overlay, and Navbar
+    document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = (currentTheme === 'dark') ? 'light' : 'dark';
         setTheme(newTheme);
       });
-    }
+    });
   }
 
   function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('leqc_theme', theme);
+
+    // Synchronize Chart.js themes if charts are initialized
+    const isLight = (theme === 'light');
+    const tickColor = isLight ? '#475569' : '#94a3b8';
+    const gridColor = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.08)';
+
+    if (probChart && probChart.options && probChart.options.scales) {
+      if (probChart.options.scales.x && probChart.options.scales.x.ticks) probChart.options.scales.x.ticks.color = tickColor;
+      if (probChart.options.scales.y && probChart.options.scales.y.ticks) probChart.options.scales.y.ticks.color = tickColor;
+      if (probChart.options.scales.y && probChart.options.scales.y.grid) probChart.options.scales.y.grid.color = gridColor;
+      probChart.update();
+    }
+
+    if (teacherProgressChartInstance && teacherProgressChartInstance.options && teacherProgressChartInstance.options.scales) {
+      if (teacherProgressChartInstance.options.scales.x && teacherProgressChartInstance.options.scales.x.ticks) teacherProgressChartInstance.options.scales.x.ticks.color = tickColor;
+      if (teacherProgressChartInstance.options.scales.y && teacherProgressChartInstance.options.scales.y.ticks) teacherProgressChartInstance.options.scales.y.ticks.color = tickColor;
+      if (teacherProgressChartInstance.options.scales.y && teacherProgressChartInstance.options.scales.y.grid) teacherProgressChartInstance.options.scales.y.grid.color = gridColor;
+      teacherProgressChartInstance.update();
+    }
+
     // Redraw SVG paths to ensure perfect rendering across theme switches
     setTimeout(() => {
       if (typeof updateJourneySvgPaths === 'function') {

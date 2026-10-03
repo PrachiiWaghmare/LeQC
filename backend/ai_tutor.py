@@ -227,25 +227,17 @@ Please provide a structured, encouraging, and pedagogically rich response.
                 "response": resp
             }
 
-        # Default CHAT
+        # Default CHAT (Natural Language Quantum Inquiry)
         else:
-            resp = (
-                f"### ⚛️ QuBitLab Quantum Guide\n\n"
-                f"You are currently exploring **{topic}** on a {num_qubits}-qubit circuit.\n\n"
-                f"* **Current State:** `{dirac or '|0...0⟩'}`\n"
-                f"* **Active Gates:** {', '.join([f'{k} ({v})' for k, v in gate_summary.items()]) if gate_summary else 'None (Ground State)'}\n"
-                f"* **Entanglement Status:** {'🔗 Maximally Entangled Subsystem' if is_entangled else 'Separable Individual States'}\n\n"
-                f"**What would you like to explore next?**\n"
-                f"- Click **Explain Circuit** to see the physical step-by-step evolution.\n"
-                f"- Click **Debug** to verify if your circuit has logical or measurement errors.\n"
-                f"- Click **Generate** and ask me to construct any quantum algorithm (e.g. *'Create a Bell state'* or *'Grover search'*).\n"
-                f"- Click **Optimize** to check for redundant gate cancellations."
+            resp, generated_circuit = self._build_chat_response(
+                user_message, topic, num_qubits, steps, gate_summary, probabilities, dirac, bloch, is_entangled
             )
             return {
                 "success": True,
                 "engine": "QuBitLab Pedagogical Core",
                 "mode": "chat",
-                "response": resp
+                "response": resp,
+                "generated_circuit": generated_circuit
             }
 
     def _build_explanation(self, num_qubits, steps, gate_summary, probabilities, dirac, bloch, is_entangled, topic) -> str:
@@ -564,3 +556,247 @@ Please provide a structured, encouraging, and pedagogically rich response.
                 "Start with H on Q0. Then use CNOT to entangle Q0 with Q1, and another CNOT to entangle Q1 with Q2!"
             )
         return "💡 **Hint:** Keep experimenting with gates in the palette and watch the 3D Bloch sphere react!"
+
+    def _build_chat_response(
+        self,
+        user_message: str,
+        topic: str,
+        num_qubits: int,
+        steps: list,
+        gate_summary: dict,
+        probabilities: dict,
+        dirac: str,
+        bloch: list,
+        is_entangled: bool
+    ) -> Tuple[str, Optional[Dict[str, Any]]]:
+        """Provides realistic, pedagogically rich quantum computing responses for conversational learner questions."""
+        msg = (user_message or "").strip().lower()
+
+        # 0. Empty or greeting
+        if not msg or msg in ["hi", "hello", "hey", "greetings", "help", "start"]:
+            welcome = (
+                f"### 👋 Greetings, Quantum Explorer!\n\n"
+                f"I am your **LeQC Quantum AI Tutor**. I analyze your circuit's wavefunction, statevector, and measurement probabilities in real-time.\n\n"
+                f"**You can ask me about:**\n"
+                f"* **Qubits:** *'What is a qubit?'* or *'How does a qubit differ from a classical bit?'*\n"
+                f"* **Superposition:** *'Explain superposition and the Hadamard gate'*\n"
+                f"* **Quantum Gates:** *'What do Pauli X, Z, and CNOT gates do?'*\n"
+                f"* **Entanglement:** *'How does entanglement work?'* or *'What is spooky action at a distance?'*\n"
+                f"* **Bell States:** *'How do I create a Bell state?'*\n"
+                f"* **Quantum Circuits:** *'How do quantum circuits execute?'*\n"
+                f"* **Qiskit:** *'Show me how to simulate this in Python with Qiskit'*\n"
+                f"* **Measurement Probabilities:** *'Explain Born\'s Rule and probability amplitudes'*\n"
+                f"* **Algorithms:** *'How does Grover\'s quantum search work?'*\n\n"
+                f"Currently, you are in **{topic}** with a {num_qubits}-qubit circuit."
+            )
+            return welcome, None
+
+        # 1. Circuit Generation / Creation Requests
+        if any(w in msg for w in ["create", "generate", "make", "build", "construct", "give me a circuit"]):
+            gen_desc, gen_circ = self._build_generation(user_message)
+            if gen_circ:
+                return gen_desc, gen_circ
+
+        # 2. QUBITS
+        if any(w in msg for w in ["qubit", "quantum bit", "what is a qubit", "bloch sphere", "statevector"]):
+            ans = (
+                "### ⚛️ What is a Qubit?\n\n"
+                "A **qubit** (quantum bit) is the fundamental unit of quantum information, analogous to the classical bit (0 or 1).\n\n"
+                "#### 1. Mathematical Representation\n"
+                "Unlike a classical bit which is strictly deterministic (either 0 or 1), a qubit exists in a two-dimensional complex Hilbert space as a linear combination (superposition) of the basis states $|0\\rangle$ and $|1\\rangle$:\n\n"
+                "$$|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle$$\n\n"
+                "where $\\alpha, \\beta \\in \\mathbb{C}$ are **probability amplitudes** satisfying the normalization condition:\n\n"
+                "$$|\\alpha|^2 + |\\beta|^2 = 1$$\n\n"
+                "#### 2. The Bloch Sphere Representation\n"
+                "Geometrically, any pure single-qubit state can be visualized as a point on the surface of the **Bloch Sphere**:\n"
+                "* **North Pole $(+Z)$:** Pure ground state $|0\\rangle = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$\n"
+                "* **South Pole $(-Z)$:** Excited state $|1\\rangle = \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$\n"
+                "* **Equator:** Equal superposition states such as $|+\\rangle = \\frac{|0\\rangle + |1\\rangle}{\\sqrt{2}}$ on the $+X$ axis.\n\n"
+                "#### 3. Measurement & Wavefunction Collapse\n"
+                "When you measure a qubit in the computational basis, its continuous superposition collapses into one of the two classical eigenstates with probabilities $P(0) = |\\alpha|^2$ and $P(1) = |\\beta|^2$."
+            )
+            return ans, None
+
+        # 3. SUPERPOSITION
+        if any(w in msg for w in ["superposition", "hadamard", "|+>", "|->", "linear combination"]):
+            ans = (
+                "### 🌊 Quantum Superposition & The Hadamard Gate\n\n"
+                "**Superposition** is the quantum principle allowing a physical system to exist simultaneously in multiple orthogonal states until measured.\n\n"
+                "#### 1. Creating Superposition with the Hadamard (H) Gate\n"
+                "In quantum circuits, superposition is typically produced by applying a **Hadamard (H)** gate to a ground-state qubit $|0\\rangle$:\n\n"
+                "$$H|0\\rangle = |+\\rangle = \\frac{|0\\rangle + |1\\rangle}{\\sqrt{2}}$$\n\n"
+                "$$H|1\\rangle = |-\\rangle = \\frac{|0\\rangle - |1\\rangle}{\\sqrt{2}}$$\n\n"
+                "#### 2. Wave Interference: The Quantum Superpower\n"
+                "Crucially, quantum states are described by **complex amplitudes**, not classical probabilities:\n"
+                "* Amplitudes can be positive, negative, or imaginary.\n"
+                "* When multiple computational paths converge, their amplitudes can **interfere constructively** (boosting correct answers) or **interfere destructively** (canceling wrong answers).\n\n"
+                "#### 3. Classical vs Quantum Multi-State Scaling\n"
+                "An $n$-qubit register can hold a simultaneous superposition of all $2^n$ computational states using only $n$ physical qubits! For example, 50 qubits hold $2^{50} \\approx 1.125 \\times 10^{15}$ simultaneous states."
+            )
+            return ans, None
+
+        # 4. QUANTUM GATES
+        if any(w in msg for w in ["quantum gate", "gates", "pauli", "cnot", "toffoli", "unitary", "phase gate"]):
+            ans = (
+                "### 🎛️ Quantum Logic Gates\n\n"
+                "Quantum gates are represented mathematically as **unitary matrices** ($U^\\dagger U = I$), ensuring that quantum time evolution is strictly **reversible** and preserves probability conservation.\n\n"
+                "#### 1. Fundamental Single-Qubit Gates\n"
+                "* **H (Hadamard):** Creates equal superposition; rotates $\\pi$ around the diagonal $(X+Z)/\\sqrt{2}$ axis.\n"
+                "* **X (Pauli-X / NOT):** Quantum bit-flip ($|0\\rangle \\leftrightarrow |1\\rangle$). Matrix: $\\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}$.\n"
+                "* **Z (Pauli-Z / Phase Flip):** Flips the relative phase of $|1\\rangle$ ($|1\\rangle \\rightarrow -|1\\rangle$). Leaves $|0\\rangle$ unchanged.\n"
+                "* **Y (Pauli-Y):** Combined bit and phase flip ($Y = iXZ$). Matrix: $\\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix}$.\n"
+                "* **S Gate:** Phase rotation of $\\pi/2$ (quarter turn about $Z$). Note that $S^2 = Z$.\n"
+                "* **T Gate:** Phase rotation of $\\pi/4$ (eighth turn). Essential for universal fault-tolerant quantum computation.\n\n"
+                "#### 2. Multi-Qubit Entangling Gates\n"
+                "* **CNOT (CX):** Flips the target qubit if and only if the control qubit is $|1\\rangle$. When preceded by an H gate, it creates maximal entanglement!\n"
+                "* **SWAP:** Exchanges quantum states between two wires.\n"
+                "* **Toffoli (CCX):** Controlled-Controlled-NOT gate; universal for reversible classical logic."
+            )
+            return ans, None
+
+        # 5. ENTANGLEMENT
+        if any(w in msg for w in ["entangle", "entanglement", "epr", "spooky", "non-local", "teleport"]):
+            ans = (
+                "### 🔗 Quantum Entanglement & Non-Locality\n\n"
+                "**Entanglement** is a uniquely quantum mechanical phenomenon wherein two or more qubits become correlated such that the quantum state of the system cannot be factored into independent states of its subsystems.\n\n"
+                "#### 1. Mathematical Definition\n"
+                "A state $|\\psi_{AB}\\rangle$ is entangled if and only if:\n\n"
+                "$$|\\psi_{AB}\\rangle \\neq |\\psi_A\\rangle \\otimes |\\psi_B\\rangle$$\n\n"
+                "#### 2. The Einstein-Podolsky-Rosen (EPR) Paradox\n"
+                "In 1935, Einstein, Podolsky, and Rosen questioned quantum mechanics, calling instantaneous non-local correlation *'spooky action at a distance'* (*spukhafte Fernwirkung*). "
+                "However, in 1964, John Stewart Bell proved through **Bell's Theorem** that no local hidden variable theory can reproduce all quantum mechanical correlations.\n\n"
+                "#### 3. Key Properties & Technologies\n"
+                "* **Instantaneous Correlation:** Measuring one qubit of a Bell pair immediately determines the measurement outcome of the other, regardless of spatial distance.\n"
+                "* **No Faster-Than-Light Signaling:** Because individual measurement outcomes are fundamentally random, entanglement cannot transmit classical information faster than light without a classical communication channel.\n"
+                "* **Applications:** Quantum Key Distribution (QKD / BB84 / E91), Superdense Coding, Quantum Teleportation, and Quantum Error Correction (Surface Codes)."
+            )
+            return ans, None
+
+        # 6. BELL STATES
+        if any(w in msg for w in ["bell state", "bell states", "phi+", "phi-", "psi+", "psi-"]):
+            circuit = {
+                "qubits": 2,
+                "steps": [
+                    [{"gate": "H", "qubit": 0}],
+                    [{"gate": "CX", "control": 0, "target": 1}],
+                    [{"gate": "M", "qubit": 0}, {"gate": "M", "qubit": 1}]
+                ]
+            }
+            ans = (
+                "### 🔔 The Four Maximally Entangled Bell States\n\n"
+                "The **Bell states** (or EPR pairs) form an orthonormal basis of maximally entangled two-qubit quantum states:\n\n"
+                "1. **$|\\Phi^+\\rangle = \\frac{|00\\rangle + |11\\rangle}{\\sqrt{2}}$** *(Canonical Bell State: 50% $|00\\rangle$, 50% $|11\\rangle$)*\n"
+                "2. **$|\\Phi^-\\rangle = \\frac{|00\\rangle - |11\\rangle}{\\sqrt{2}}$** *(Phase-flipped correlation)*\n"
+                "3. **$|\\Psi^+\\rangle = \\frac{|01\\rangle + |10\\rangle}{\\sqrt{2}}$** *(Anti-correlated: 50% $|01\\rangle$, 50% $|10\\rangle$)*\n"
+                "4. **$|\\Psi^-\\rangle = \\frac{|01\\rangle - |10\\rangle}{\\sqrt{2}}$** *(Singlet state: anti-symmetric under particle exchange)*\n\n"
+                "#### Construction Recipe for $|\\Phi^+\\rangle$:\n"
+                "1. Start with ground state $|00\\rangle$.\n"
+                "2. Apply a **Hadamard (H)** gate to Qubit 0: $\\rightarrow \\frac{|0\\rangle + |1\\rangle}{\\sqrt{2}} \\otimes |0\\rangle = \\frac{|00\\rangle + |10\\rangle}{\\sqrt{2}}$.\n"
+                "3. Apply a **CNOT (CX)** gate with Control = Q0 and Target = Q1: $\\rightarrow \\frac{|00\\rangle + |11\\rangle}{\\sqrt{2}}$.\n\n"
+                "Click **Load Circuit Into Studio** below to test this circuit directly!"
+            )
+            return ans, circuit
+
+        # 7. QUANTUM CIRCUITS
+        if any(w in msg for w in ["circuit", "wires", "depth", "quantum circuit", "diagram"]):
+            ans = (
+                "### 📐 How Quantum Circuits Work\n\n"
+                "A **quantum circuit** is a computational model representing a sequence of quantum gates operating on an ordered register of qubits.\n\n"
+                "#### 1. Anatomical Elements\n"
+                "* **Horizontal Lines (Wires):** Each horizontal wire represents a physical or logical qubit, evolving from left (initialization, $t=0$) to right (measurement).\n"
+                "* **Boxes / Symbols:** Represent unitary operations ($H, X, Z, S, T$).\n"
+                "* **Vertical Control Lines:** Connect multi-qubit gates (e.g. CNOT has a solid dot $\\bullet$ on the control and $\\oplus$ on the target).\n"
+                "* **Meter Icons:** Measurement operations that project quantum states into classical memory bits.\n\n"
+                "#### 2. Key Metrics\n"
+                "* **Circuit Width:** Total number of qubits in the system.\n"
+                "* **Circuit Depth:** The maximum number of gate operations on any single qubit path that must be executed sequentially. Shallow depth is critical to minimize decoherence on NISQ processors."
+            )
+            return ans, None
+
+        # 8. QISKIT & PYTHON
+        if any(w in msg for w in ["qiskit", "python", "code", "aer", "simulator", "sdk"]):
+            ans = (
+                "### 🐍 Quantum Programming with Qiskit\n\n"
+                "**Qiskit** is the open-source quantum SDK created by IBM. Here is a clean script demonstrating how to build, simulate, and measure a 2-qubit Bell state:\n\n"
+                "```python\n"
+                "from qiskit import QuantumCircuit\n"
+                "from qiskit_aer import AerSimulator\n\n"
+                "# 1. Initialize a 2-qubit circuit with 2 classical bits\n"
+                "qc = QuantumCircuit(2, 2)\n\n"
+                "# 2. Apply gates: Hadamard on Q0, then CNOT(0 -> 1)\n"
+                "qc.h(0)\n"
+                "qc.cx(0, 1)\n\n"
+                "# 3. Measure qubits into classical registers\n"
+                "qc.measure([0, 1], [0, 1])\n\n"
+                "# 4. Simulate with Qiskit Aer (1024 shots)\n"
+                "simulator = AerSimulator()\n"
+                "job = simulator.run(qc, shots=1024)\n"
+                "counts = job.result().get_counts()\n\n"
+                "print('Measurement Counts:', counts)\n"
+                "# Output: {'00': ~512, '11': ~512}\n"
+                "```\n\n"
+                "You can also run Python code interactively in LeQC under the **Code Lab** tab!"
+            )
+            return ans, None
+
+        # 9. MEASUREMENT PROBABILITIES & BORN RULE
+        if any(w in msg for w in ["probability", "probabilities", "born", "measurement", "collapse", "amplitude"]):
+            ans = (
+                "### 🎲 Measurement Probabilities & Born's Rule\n\n"
+                "In quantum mechanics, outcomes are fundamentally non-deterministic and governed by **Born's Rule**, formulated by Max Born in 1926.\n\n"
+                "#### 1. Born's Rule Formulation\n"
+                "Given an arbitrary statevector $|\\psi\\rangle = \\sum_{x} c_x |x\\rangle$ in the computational basis, the probability $P(x)$ of observing basis state $|x\\rangle$ upon measurement is:\n\n"
+                "$$P(x) = |c_x|^2 = |\\langle x|\\psi\\rangle|^2$$\n\n"
+                "Because probabilities must sum to 100%, the statevector satisfies the **normalization constraint**:\n\n"
+                "$$\\sum_{x} P(x) = \\sum_{x} |c_x|^2 = 1$$\n\n"
+                "#### 2. Amplitudes vs Probabilities\n"
+                "A probability $P(x)$ is always a real number between $0$ and $1$. A quantum amplitude $c_x = r e^{i\\theta}$ is a **complex number** with magnitude $r$ and phase angle $\\theta$.\n"
+                "* Phase interference enables destructive cancellation of unwanted solutions, a cornerstone of algorithms like Shor's and Grover's!\n\n"
+                "#### 3. Wavefunction Collapse & Shot Statistics\n"
+                "Upon measurement, the continuous wavefunction irreversibly collapses into the detected eigenstate. Running 1024 shots samples this probability distribution experimentally."
+            )
+            return ans, None
+
+        # 10. GROVER'S ALGORITHM
+        if any(w in msg for w in ["grover", "search", "oracle", "amplitude amplification", "diffusion"]):
+            ans = (
+                "### 🔍 Grover's Quantum Search Algorithm\n\n"
+                "**Grover's Algorithm** (Lov Grover, 1996) solves the problem of searching an unstructured database of $N$ items in $O(\\sqrt{N})$ evaluations, providing a **quadratic speedup** over classical brute-force $O(N)$ search.\n\n"
+                "#### 1. The Algorithm Workflow\n"
+                "1. **Uniform Superposition:** Apply Hadamard gates across all $n$ qubits to prepare equal amplitudes: $|s\\rangle = \\frac{1}{\\sqrt{N}} \\sum_{x=0}^{N-1} |x\\rangle$.\n"
+                "2. **Quantum Oracle ($U_w$):** Recognizes the target state $|w\\rangle$ and flips its phase: $|x\\rangle \\rightarrow -|x\\rangle$ if $x = w$, leaving other states unchanged.\n"
+                "3. **Diffusion Operator ($U_s$):** Inverts all amplitudes about their mean average value: $U_s = 2|s\\rangle\\langle s| - I$. Because the marked state was made negative, inversion about the mean drastically magnifies its amplitude while reducing all others!\n"
+                "4. **Iterate:** Repeat steps 2 & 3 approximately $R \\approx \\frac{\\pi}{4}\\sqrt{N}$ times.\n"
+                "5. **Measure:** The marked item will be measured with probability close to 100%!"
+            )
+            return ans, None
+
+        # 11. Asking about current circuit
+        if any(w in msg for w in ["my circuit", "current circuit", "what does this do", "explain this circuit", "active circuit"]):
+            gate_list_str = ', '.join([f'{k} ({v})' for k, v in gate_summary.items()]) if gate_summary else 'No gates (Ground state)'
+            ans = (
+                f"### 🔬 Telemetry for Your Current Circuit\n\n"
+                f"* **Qubits:** {num_qubits} active wires\n"
+                f"* **Current State:** `{dirac or '|0...0⟩'}`\n"
+                f"* **Applied Gates:** {gate_list_str}\n"
+                f"* **Entanglement:** {'🔗 Maximally Entangled State' if is_entangled else 'Independent / Separable Subsystems'}\n"
+                f"* **Measurement Probabilities:** {json.dumps(probabilities) if probabilities else 'All probability in ground state'}\n\n"
+                f"Would you like me to **explain the step-by-step physical breakdown**, **debug potential issues**, or **optimize redundant gates**?"
+            )
+            return ans, None
+
+        # 12. Contextual Fallback for Other Questions
+        fallback = (
+            f"### ⚛️ LeQC Quantum Pedagogical Guide\n\n"
+            f"That is an interesting question regarding quantum computing! You are currently exploring **{topic}** on a {num_qubits}-qubit circuit.\n\n"
+            f"* **Current State:** `{dirac or '|0...0⟩'}`\n"
+            f"* **Active Gates:** {', '.join([f'{k} ({v})' for k, v in gate_summary.items()]) if gate_summary else 'None (Ground State)'}\n"
+            f"* **Entanglement Status:** {'🔗 Maximally Entangled' if is_entangled else 'Separable'}\n\n"
+            f"**Recommended Topics to Explore:**\n"
+            f"1. Ask *'What is a qubit?'* to understand Bloch spheres and complex Hilbert spaces.\n"
+            f"2. Ask *'Explain superposition'* to see how the Hadamard gate enables wave interference.\n"
+            f"3. Ask *'How does entanglement work?'* to explore Bell pairs and EPR non-locality.\n"
+            f"4. Ask *'Show me Qiskit code'* for runnable Python circuit simulation.\n"
+            f"5. Click **Explain Circuit** or **Debug** on the top toolbar for automatic circuit telemetry."
+        )
+        return fallback, None
