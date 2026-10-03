@@ -2,6 +2,8 @@
 
 > **Explore. Build. Simulate. Master Quantum Computing.**
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/PrachiiWaghmare/LeQC)
+
 LeQC is a modern, interactive, gamified quantum computing education platform. It blends conceptual intuition, an interactive quantum circuit builder, live Qiskit Aer quantum simulation, 3D Bloch sphere visualizations, AI tutoring, and teacher analytics into an engaging experience.
 
 ---
