@@ -48,3 +48,4 @@ Thumbs.db
 # Scratch / logs
 scratch/
 *.log
+*.exe
